@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "470670777580",
+    "project_id": "bmeducator-61e1e",
+    "storage_bucket": "bmeducator-61e1e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:470670777580:android:57a80060fe9bdce0c259c9",
+        "android_client_info": {
+          "package_name": "com.bmeducators.bmeducators"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYwtkl8AalvdwC7zUwuDJeUfBb1Zk3tik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

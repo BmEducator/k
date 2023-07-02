@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCndYYZ3ZdQowp28PtYZ83Y6YSDqyOaIQs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>470670777580</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.bmeducators.bmeducators</string>
+	<key>PROJECT_ID</key>
+	<string>bmeducator-61e1e</string>
+	<key>STORAGE_BUCKET</key>
+	<string>bmeducator-61e1e.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:470670777580:ios:5397d1424574f5e0c259c9</string>
+</dict>
+</plist>
