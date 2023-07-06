@@ -498,6 +498,8 @@ class _quiz_ExamMode_ScreenState extends State<quiz_ExamMode_Screen> {
                                   ,
                                 ),
                               ),
+
+
                               InkWell(
                                 onTap: () {
 
@@ -570,7 +572,6 @@ class _quiz_ExamMode_ScreenState extends State<quiz_ExamMode_Screen> {
                                   else{
                                     _showFinishDialog();
                                   }
-
                                 },
                                 child: Material(
                                   borderRadius: BorderRadius.circular(5),
@@ -946,10 +947,41 @@ class _quiz_ExamMode_ScreenState extends State<quiz_ExamMode_Screen> {
             OptioSelected = option_no;
           });
           selectedOptions[question_no] = option_no;
-
-
-
             isSelected= true;
+          error = "";
+          setState(() {
+
+          });
+
+          if (question_no == (questioList.length-1) &&
+              isSelected ) {
+            if(question_no == (questioList.length-1)){
+              if(selectedOptions.contains(0)){
+                for(int i= 0;i<selectedOptions.length;i++){
+                  if(selectedOptions[i] == 0) {
+                    error = "Tick Question no ${i+1}";
+                    setState(() {
+
+                    });
+                  }
+                }
+              }
+              else{
+                saveSharedPreference();
+                _showFinishDialog();
+              }
+            }
+          }
+          else {
+            if(question_no != questioList.length-1){
+              saveSharedPreference();
+              question_no = question_no + 1;
+              aswer = questioList[question_no].answer;
+              OptioSelected = selectedOptions[question_no];
+              setState(() {});
+            }
+
+          }
         },
         child: Container(
           width: MediaQuery

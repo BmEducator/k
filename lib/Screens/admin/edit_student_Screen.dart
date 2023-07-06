@@ -46,18 +46,21 @@ class _editStudentScreenState extends State<editStudentScreen> {
     'Dutch',
     'Chinese',
     'French',
-    'Russian'
+    'Urdu',
+    'Hindi'
   ];
   List<String> licenseTypes = [
-    'License B',
-    'Permit A',
-    'Permit C',
-    'Permit D',
-    'Permit A1-A2',
-    'Car Merchandise',
+  'Permiso AM',
+  'Permiso A1-A2',
+  'Permiso B',
+  'Permiso C',
+  'Permiso D',
+  'Permiso C+E',
+  'CAP',
+  'Curso de Taxi Barcelona',
   ];
   late DateTime d;
-  String licenseType = "Permit A" ;
+  String licenseType = "Permiso B" ;
 
   @override
   void initState() {
@@ -429,6 +432,18 @@ class _editStudentScreenState extends State<editStudentScreen> {
                                 "allStudents").collection("allStudents")
                                 .doc(_emailController.text).
                             set(newStudent.toMap());
+                            FirebaseFirestore.instance.collection("admin").doc(
+                                "data").collection("students")
+                                .doc("login").collection("logins").doc(
+                                _emailController.text).
+                            update({
+                              "name": _nameController.text,
+                              "email": _emailController.text,
+                              "password": _passwordController.text,
+                              'profileImage':_imageUrl,
+                              'dni':_dniController.text,
+                              'licenseType':licenseTypes[0]
+                            });
 
 
                             Navigator.of(context).push(

@@ -324,9 +324,6 @@ class _createQuizInBankState extends State<createQuizInBank> {
                                   }
                                   if(i == (questionsList.length-1)){
 
-
-
-
                                     quizModelForBank q  = quizModelForBank(
                                       id: timestamp,
                                       questions: tempList,

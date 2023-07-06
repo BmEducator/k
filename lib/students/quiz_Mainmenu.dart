@@ -134,7 +134,6 @@ class _quizMainmenuScreenState extends State<quizMainmenuScreen> {
                          child:
                          hasData
                              ? ListView.builder(
-                           reverse: true,
                            physics: const NeverScrollableScrollPhysics(),
                            shrinkWrap: true,
                            padding: const EdgeInsets.symmetric(
@@ -215,12 +214,8 @@ class _quizMainmenuScreenState extends State<quizMainmenuScreen> {
         }
         else {
           if(status == "   Done  " && revise == "true"){
-            print(revise);
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(
-                builder: (context) =>
-                    reviseModeScreen(
-                      quizToPerform: pendingQuizesList[i], isLanguageTranslation: isTranslation,)));
+
+            _showReviseDialog(context,pendingQuizesList[i]);
 
           }
 
@@ -255,11 +250,6 @@ class _quizMainmenuScreenState extends State<quizMainmenuScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 miniItem("Quiz #","  "+ (i+1).toString()+ "  " ),
-                VerticalDivider(thickness: 2,),
-                miniItem(" Mode ", " "+mode+" "),
-                VerticalDivider(thickness: 2,),
-
-                miniItem(" Total "," "+ pendingQuizesList[i].questions.length.toString()+" "),
 
                 VerticalDivider(thickness: 2,),
                 miniItem("Status", status)
@@ -369,4 +359,104 @@ class _quizMainmenuScreenState extends State<quizMainmenuScreen> {
       ),
     );
   }
+
+  Future<void> _showReviseDialog(BuildContext context,quizToPerformModel quiz) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            content: SizedBox(
+              height: MediaQuery.of(context).size.width * 0.5,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+                    child: const Text(
+                      "You have already Completed this Quiz",
+                      style: TextStyle(fontFamily: "Poppins"),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushReplacement(new MaterialPageRoute(
+                                builder: (context) =>
+                                    reviseModeScreen(
+                                      quizToPerform: quiz, isLanguageTranslation: isTranslation,)));
+
+                          },
+                          child: Card(
+                            elevation: 10,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+
+                              height: MediaQuery.of(context).size.height*0.1,
+                              width: MediaQuery.of(context).size.width*0.22,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.cached,
+                                    size: 30,
+                                    color: Colors.purple,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text("Revise",
+                                      style: TextStyle( fontFamily: "Poppins"))
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushReplacement(new MaterialPageRoute(
+                                builder: (context) =>
+                                    quizScreen(
+                                      quizToPerform: quiz, isLanguageTranslation: isTranslation, completedQuiz: completedQuizes,)));
+
+                          },
+                          child: Card(
+                            elevation: 10,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              height: MediaQuery.of(context).size.height*0.1,
+                              width: MediaQuery.of(context).size.width*0.22,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.repeat_on_outlined,
+                                    color: Colors.green,
+                                    size: 30,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text("Redo",
+                                      style: TextStyle(
+                                           fontFamily: "Poppins"))
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
 }

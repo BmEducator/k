@@ -21,7 +21,7 @@ class questionPankCategories extends StatefulWidget {
 }
 
 class _questionPankCategoriesState extends State<questionPankCategories> {
-  List<List<String>> itemList = [
+  List<List<String>> ItemList = [
     ['A', 'Permit A'],
     ['B', 'Permit B'],
     ['C', 'Permit C'],
@@ -30,11 +30,19 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
     ['L', 'License B'],
     ['Car', 'Car Merchandise'],
   ];
+  List<List<String>> familiesList = [
+    ["AM",'Permiso AM'],
+    ['A1-2','Permiso A1-A2'],
+    ['B','Permiso B'],
+    ['C','Permiso C'],
+    ['D','Permiso D'],
+    ['C+E','Permiso C+E'],
+    ['CAP','CAP'],
+    ['CTB','Curso de Taxi Barcelona']];
   String searchText = "";
-  List<String> familiesList = [];
   late List<QuestionModel> questionList =[];
   late SharedPreferences pref;
-  bool isLoading = true;
+  bool isLoading = false;
 
   Future init() async{
     pref = await SharedPreferences.getInstance();
@@ -44,7 +52,7 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
   @override
   void initState() {
     // TODO: implement initState
-    getfamilies();
+    // getfamilies();
     super.initState();
   }
 
@@ -102,6 +110,7 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
                       ],
                     ),
                   ),
+                SizedBox(height: 20,),
                 isLoading?
                 Container(
                   height: MediaQuery.of(context).size.height * 0.5,
@@ -142,13 +151,13 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
                     child: GridView.count(
                       shrinkWrap: true,
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                      scrollDirection: Axis.vertical,
+                      physics: NeverScrollableScrollPhysics(),
                       crossAxisCount: 2,
                       childAspectRatio: (1 / 0.9),
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 5,
                       children: List.generate(
-                        familiesList.length+1,
+                        familiesList.length,
                         (int i) {
                           return AnimationConfiguration.staggeredGrid(
                               position: i,
@@ -158,13 +167,10 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
                                 child: FadeInAnimation(
                                     child: Padding(
                                   padding: const EdgeInsets.all(5.0),
-                                  child: i < (familiesList.length)
-                                      ? serviceContainer(
-                                          familiesList[i][familiesList[i].length-1].toUpperCase(), familiesList[i], i)
-                                      : serviceContainer("Create New", "Create New", i),
-                                )),
+                                  child:serviceContainer(familiesList[i][0], familiesList[i][1], 1)
+                          ))
                               ));
-                        },
+                          },
                       ),
                     ),
                   ),
@@ -195,14 +201,21 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
         child: Container(
           width: MediaQuery.of(context).size.width * 0.32,
           height: MediaQuery.of(context).size.height * 0.15,
+          decoration: BoxDecoration(
+              color:Colors.blue.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(color: Colors.blueAccent.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 10,
+                    offset: Offset(0, 12)
+                ),
+              ]),
           child: Card(
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            color: i < familiesList.length
-                ? Colors.white60.withOpacity(0.6)
-                : Colors.purple.shade100,
+            color: Colors.white,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            elevation: 10,
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: [
@@ -210,9 +223,7 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     width: MediaQuery.of(context).size.width * 0.38,
                     height: 28,
-                    color: i < (familiesList.length)
-                        ? Colors.blue.withOpacity(0.8)
-                        : Colors.green,
+                    color:Colors.blue.withOpacity(0.8),
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
@@ -233,14 +244,14 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
                             char,
                             style: TextStyle(
                                 fontFamily: "Poppins",
-                                fontSize: 40,
-                                color: Colors.black.withOpacity(0.3)),
+                                fontSize: 30,
+                                color: Colors.black.withOpacity(0.2)),
                           ),
                         ),
                       )
                     : InkWell(
                         onTap: () {
-                          _showCreateDialog();
+
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 20),
@@ -257,213 +268,221 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
         ));
   }
 
-  Future<void> _showCreateDialog() {
-    TextEditingController controller = TextEditingController();
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            contentPadding: EdgeInsets.zero,
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: const Icon(Icons.close),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.red[100]),
-                      child: TextField(
-                        controller: controller,
-                        decoration: InputDecoration(
-                          labelText: " Add Family Name",
-                        ),
-                      )),
-                  Padding(
-                    padding: const EdgeInsets.all(40.0),
-                    child: Material(
-                      borderRadius: const BorderRadius.all(Radius.circular(8)),
-                      elevation: 6,
-                      color: Colors.blue,
-                      child: InkWell(
-                        onTap: () async {
-                          List<String> urlslist = [];
-                          // urlslist.addAll(widget.urls);
-                          familiesList.add(controller.text);
-                          await FirebaseFirestore.instance
-                              .collection("admin")
-                              .doc("data")
-                              .collection("families")
-                              .doc("families")
-                              .set({
-                            'families': FieldValue.arrayUnion(familiesList)
-                          });
+  // Future<void> _showCreateDialog() {
+  //   TextEditingController controller = TextEditingController();
+  //   return showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           contentPadding: EdgeInsets.zero,
+  //           content: SingleChildScrollView(
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 InkWell(
+  //                   onTap: () {
+  //                     Navigator.pop(context);
+  //                   },
+  //                   child: Padding(
+  //                     padding: const EdgeInsets.all(8.0),
+  //                     child: const Icon(Icons.close),
+  //                   ),
+  //                 ),
+  //                 const SizedBox(
+  //                   height: 10,
+  //                 ),
+  //                 Container(
+  //                     margin:
+  //                         EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+  //                     width: MediaQuery.of(context).size.width * 0.9,
+  //                     padding: EdgeInsets.symmetric(horizontal: 10),
+  //                     decoration: BoxDecoration(
+  //                         borderRadius: BorderRadius.circular(10),
+  //                         color: Colors.red[100]),
+  //                     child: TextField(
+  //                       controller: controller,
+  //                       decoration: InputDecoration(
+  //                         labelText: " Add Family Name",
+  //                       ),
+  //                     )),
+  //                 Padding(
+  //                   padding: const EdgeInsets.all(40.0),
+  //                   child: Material(
+  //                     borderRadius: const BorderRadius.all(Radius.circular(8)),
+  //                     elevation: 6,
+  //                     color: Colors.blue,
+  //                     child: InkWell(
+  //                       onTap: () async {
+  //                         List<String> urlslist = [];
+  //                         // urlslist.addAll(widget.urls);
+  //                         familiesList.add(controller.text);
+  //                         await FirebaseFirestore.instance
+  //                             .collection("admin")
+  //                             .doc("data")
+  //                             .collection("families")
+  //                             .doc("families")
+  //                             .set({
+  //                           'families': FieldValue.arrayUnion(familiesList)
+  //                         });
+  //
+  //
+  //                         setState(() {
+  //
+  //                         });
+  //                         Navigator.pop(context);
+  //
+  //                         ScaffoldMessenger.of(context).showSnackBar(
+  //                             SnackBar(content: Text("Family Added")));
+  //                         // Navigator.pushReplacement(
+  //                         //     context, MaterialPageRoute(builder: (context) => myTiktoks()));
+  //                       },
+  //                       child: Container(
+  //                         height: 40,
+  //                         width: double.infinity,
+  //                         alignment: Alignment.center,
+  //                         child: const Text(
+  //                           'Save',
+  //                           style: TextStyle(
+  //                               color: Colors.white,
+  //                               fontSize: 17,
+  //                               fontFamily: "Poppins"),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
 
-                          pref.setStringList("families", familiesList);
-                          setState(() {
-
-                          });
-                          Navigator.pop(context);
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Family Added")));
-                          // Navigator.pushReplacement(
-                          //     context, MaterialPageRoute(builder: (context) => myTiktoks()));
-                        },
-                        child: Container(
-                          height: 40,
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'Save',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontFamily: "Poppins"),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  Future<void> getfamilies() async {
-    await init();
-
-    List<dynamic> temp = [];
-
-
-   try {
-     print("cache");
-     await FirebaseFirestore.instance
-         .collection("admin")
-         .doc("data")
-         .collection("families")
-         .doc("families").get(GetOptions(source: Source.cache)).then((value) =>
-     {
-
-       temp.addAll(value["families"])
-     });
-
-     familiesList = temp.cast<String>();
-   }on FirebaseException catch(e){
-     print("notExist");
-     print("f from cache");
-     await FirebaseFirestore.instance
-         .collection("admin")
-         .doc("data")
-         .collection("families")
-         .doc("families").get(GetOptions(source: Source.server)).then((value) =>
-     {
-       temp.addAll(value["families"])
-     });
-
-     familiesList = temp.cast<String>();
-
-
-   }catch (e){
-
-   }
-
-
-
-
-
-    //
-    //
-    // if(pref.containsKey("families")){
-    //
-    //   familiesList = pref.getStringList("families")!;
-    //
-    //   if(familiesList.length == 0){
-    //     print("from server");
-    //     await FirebaseFirestore.instance
-    //         .collection("admin")
-    //         .doc("data")
-    //         .collection("families")
-    //         .doc("families").get(GetOptions(source: Source.server)).then((value) =>
-    //     {
-    //       temp.addAll(value["families"])
-    //     });
-    //
-    //     setState(() {});
-    //     familiesList = temp.cast<String>();
-    //
-    //     pref.setStringList("families",familiesList)!;
-    //
-    //     //
-    //     //
-    //     //
-    //     // if (doc.exists ) {
-    //     //   print("cache");
-    //     //   temp.addAll(doc.get("families"));
-    //     // } else {
-    //     //   print("no cache");
-    //     //
-    //     // var doc =    await FirebaseFirestore.instance.
-    //     // collection("admin").doc("data").
-    //     // collection("families").doc("families").get(GetOptions(source: Source.server));
-    //     // print("server");
-    //     // temp.addAll(doc.get("families"));
-    //
-    //
-    //   }
-    //   else{
-    //     print("cache");
-    //   }
-    // }
-    // else{
-    //     print("from server");
-    //     await FirebaseFirestore.instance
-    //         .collection("admin")
-    //         .doc("data")
-    //         .collection("families")
-    //         .doc("families").get(GetOptions(source: Source.server)).then((value) =>
-    //     {
-    //       temp.addAll(value["families"])
-    //     });
-    //
-    //     setState(() {});
-    //     familiesList = temp.cast<String>();
-    //
-    //     pref.setStringList("families",familiesList)!;
-    //
-    // }
-
-  isLoading = false;
-    setState(() {
-    }
-
-
-
-    );
-
-
-
-
-
-  }
+  // Future<void> getfamilies() async {
+  //   await init();
+  //
+  //   List<String> temp = [
+  //   'Permiso AM',
+  //   'Permiso A1-A2',
+  //   'Permiso B',
+  //   'Permiso C',
+  //   'Permiso D',
+  //   'Permiso C+E',
+  //   'CAP',
+  //   'Curso de Taxi Barcelona'];
+  //
+  //   familiesList.addAll(temp);
+  //  // try {
+  //  //   print("cache");
+  //  //   await FirebaseFirestore.instance
+  //  //       .collection("admin")
+  //  //       .doc("data")
+  //  //       .collection("families")
+  //  //       .doc("families").get(GetOptions(source: Source.cache)).then((value) =>
+  //  //   {
+  //  //
+  //  //     temp.addAll(value["families"])
+  //  //   });
+  //  //
+  //  //   familiesList = temp.cast<String>();
+  //  // }on FirebaseException catch(e){
+  //  //   print("notExist");
+  //  //   print("f from cache");
+  //  //   await FirebaseFirestore.instance
+  //  //       .collection("admin")
+  //  //       .doc("data")
+  //  //       .collection("families")
+  //  //       .doc("families").get(GetOptions(source: Source.server)).then((value) =>
+  //  //   {
+  //  //     temp.addAll(value["families"])
+  //  //   });
+  //  //
+  //  //   familiesList = temp.cast<String>();
+  //  //
+  //  //
+  //  // }catch (e){
+  //  //
+  //  // }
+  //
+  //
+  //
+  //
+  //
+  //   //
+  //   //
+  //   // if(pref.containsKey("families")){
+  //   //
+  //   //   familiesList = pref.getStringList("families")!;
+  //   //
+  //   //   if(familiesList.length == 0){
+  //   //     print("from server");
+  //   //     await FirebaseFirestore.instance
+  //   //         .collection("admin")
+  //   //         .doc("data")
+  //   //         .collection("families")
+  //   //         .doc("families").get(GetOptions(source: Source.server)).then((value) =>
+  //   //     {
+  //   //       temp.addAll(value["families"])
+  //   //     });
+  //   //
+  //   //     setState(() {});
+  //   //     familiesList = temp.cast<String>();
+  //   //
+  //   //     pref.setStringList("families",familiesList)!;
+  //   //
+  //   //     //
+  //   //     //
+  //   //     //
+  //   //     // if (doc.exists ) {
+  //   //     //   print("cache");
+  //   //     //   temp.addAll(doc.get("families"));
+  //   //     // } else {
+  //   //     //   print("no cache");
+  //   //     //
+  //   //     // var doc =    await FirebaseFirestore.instance.
+  //   //     // collection("admin").doc("data").
+  //   //     // collection("families").doc("families").get(GetOptions(source: Source.server));
+  //   //     // print("server");
+  //   //     // temp.addAll(doc.get("families"));
+  //   //
+  //   //
+  //   //   }
+  //   //   else{
+  //   //     print("cache");
+  //   //   }
+  //   // }
+  //   // else{
+  //   //     print("from server");
+  //   //     await FirebaseFirestore.instance
+  //   //         .collection("admin")
+  //   //         .doc("data")
+  //   //         .collection("families")
+  //   //         .doc("families").get(GetOptions(source: Source.server)).then((value) =>
+  //   //     {
+  //   //       temp.addAll(value["families"])
+  //   //     });
+  //   //
+  //   //     setState(() {});
+  //   //     familiesList = temp.cast<String>();
+  //   //
+  //   //     pref.setStringList("families",familiesList)!;
+  //   //
+  //   // }
+  //
+  // isLoading = false;
+  //   setState(() {
+  //   }
+  //
+  //
+  //
+  //   );
+  //
+  //
+  //
+  //
+  //
+  // }
 
   Future<void> getQuestions() async {
     var data = await FirebaseFirestore.instance

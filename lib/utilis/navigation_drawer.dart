@@ -407,17 +407,17 @@ class _NavigationDrawerState extends State<NavigationDrawer>
                             ),
                             InkWell(
                               onTap: (){
-                                Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            developersInformation()));
+                                // Navigator.of(context).push(
+                                //     MaterialPageRoute(
+                                //         builder: (context) =>
+                                //             developersInformation()));
 
                               },
                               child: Column(
                                 children: [
-                                  Text("Developed by",style: TextStyle(fontFamily: "PoppinRegular",color: Colors.grey,fontSize: 11),),
+                                  Text("Developed by",style: TextStyle(fontFamily: "PoppinRegular",color: Colors.grey,fontSize: 10),),
                                   SizedBox(height: 5,),
-                                  Text("Maan",style: TextStyle(color: Colors.white,fontFamily: "PoppinRegular"),)
+                                  Text("W3Solutions",style: TextStyle(color: Colors.white,fontFamily: "PoppinRegular",fontSize: 16),)
                                  , SizedBox(height: 90,)
 
                                 ],

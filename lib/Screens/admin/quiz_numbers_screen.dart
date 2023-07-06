@@ -213,9 +213,10 @@ class _quizNoScreenState extends State<quizNoScreen> {
                     ),
                     SizedBox(height: 5,),
                     Text(
-                     "    "+ widget.familyName,
-                      style: TextStyle(fontFamily: "Poppins", fontSize: 25,letterSpacing: 1),
+                     "  "+ widget.familyName,
+                      style: TextStyle(fontFamily: "Poppins", fontSize: 22,letterSpacing: 1),
                     ),
+                    SizedBox(height: 10,),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -263,7 +264,6 @@ class _quizNoScreenState extends State<quizNoScreen> {
                       child:
                       hasData
                           ? ListView.builder(
-                        reverse: true,
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         padding: const EdgeInsets.symmetric(
@@ -275,13 +275,19 @@ class _quizNoScreenState extends State<quizNoScreen> {
                         },
                         itemCount: quizesList.length,
                       )
-                          : const Text(
+                          : Container(
+                        height: MediaQuery.of(context).size.height*0.4,
+
+                            child: Center(
+                              child: const Text(
                         "No Quiz to show",
                         style: TextStyle(
-                            fontFamily: "PoppinRegular",
-                            fontSize: 20,
-                            color: Colors.blue),
-                      ) ,
+                                fontFamily: "PoppinRegular",
+                                fontSize: 20,
+                                color: Colors.blue),
+                      ),
+                            ),
+                          ) ,
                     ):
 
                     !isLoading && quizesList.length ==0 ?
@@ -325,7 +331,8 @@ class _quizNoScreenState extends State<quizNoScreen> {
                     ):
                     Container(
                         height: MediaQuery.of(context).size.height*0.4,
-                        child: Center(child: Text("No Quiz",style: TextStyle(fontFamily: "PoppinRegular",fontSize: 17),))),
+                        child: Center(child:
+                        CircularProgressIndicator())),
                     SizedBox(height: 30,),
                   ],
                 ),
@@ -413,7 +420,7 @@ class _quizNoScreenState extends State<quizNoScreen> {
     await FirebaseFirestore.instance.collection("admin").
     doc("data").collection("QuestionBank")
         .doc("Families").collection(widget.familyName).get(GetOptions(source: Source.server)).then((value) => {
-      value.docs.forEach((element) {
+      value.docs.forEach((element) async {
         print(element['id']);
     quizModelForBank q = quizModelForBank(
     id: element['id'],
@@ -422,7 +429,7 @@ class _quizNoScreenState extends State<quizNoScreen> {
     timestamp: element['timestamp']);
     quizesList.add(q);
 
-    q.questions.forEach((element) {
+        q.questions.forEach((element) {
 
       QuestionModel qw= QuestionModel(
           image: element['image'],
@@ -442,9 +449,24 @@ class _quizNoScreenState extends State<quizNoScreen> {
       hasData = true;
     }
 
-
+    // quizesList.forEach((element) async {
+    //   quizModelForBank qr  = quizModelForBank(
+    //     id: element.id,
+    //     questions: element.questions,
+    //     mode: element.mode, timestamp: element.timestamp,
+    //   );
+    //
+    //   print(qr.mode);
+    //
+    //   await FirebaseFirestore.instance.collection("admin").
+    //   doc("data").collection("QuestionBank")
+    //       .doc("Families").collection("Permiso B")
+    //       .doc(qr.timestamp).set(qr.toJson());
+    //
+    //
+    // });
     setState(() {
-
+       isLoading = false;
     });
 
   }

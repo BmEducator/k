@@ -49,12 +49,14 @@ class _addStudentScreenState extends State<addStudentScreen> {
   ];
 
   List<String> licenseTypes = [
-   'Permit A',
-   'Permit B',
-   'Permit C',
-   'Permit D',
-   'Permit A1-A2',
-    'Car Merchandise',
+   'Permiso AM',
+   'Permiso A1-A2',
+   'Permiso B',
+   'Permiso C',
+   'Permiso D',
+   'Permiso C+E',
+    'CAP',
+    'Curso de Taxi Barcelona',
   ];
 
   late SharedPreferences pref;

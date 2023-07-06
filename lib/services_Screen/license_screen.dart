@@ -61,7 +61,7 @@ class _license_screenState extends State<license_screen> {
                         ),
                          )),
                         SizedBox(height: 10,),
-                        Image.asset("assets/license1.jpg",height: MediaQuery.of(context).size.height *0.2),
+                        Image.asset("assets/license1.png",height: MediaQuery.of(context).size.height *0.2),
                         SizedBox(height: 15,),
 
                         Divider(thickness: 2,),
@@ -112,7 +112,7 @@ class _license_screenState extends State<license_screen> {
                             )),
 
                         SizedBox(height: 10,),
-                        Image.asset("assets/license4.jpg",height: MediaQuery.of(context).size.height *0.2),
+                        Image.asset("assets/license4.png",height: MediaQuery.of(context).size.height *0.2),
                         SizedBox(height: 55,),
 
 
