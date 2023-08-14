@@ -243,9 +243,10 @@ class _student_statistics_screenState extends State<student_statistics_screen> {
                     Material(
                       elevation: 5,
                       borderRadius: BorderRadius.circular(5),
-                      color: quizesList[i].mistakes.length > 3
-                          ? Colors.red[500]
-                          : Colors.green[500],
+                      color: quizesList[i].mistakes.length > 3 ? Colors.red[500]
+                          : quizesList[i].mistakes.length == 0?
+                      Colors.green[500]:
+                      Colors.orangeAccent,
                       child: InkWell(
                         onTap: () {
                           _showMistakesDialog(context, i, quizesList[i]);

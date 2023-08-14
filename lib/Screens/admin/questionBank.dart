@@ -65,7 +65,7 @@ class _questionBankState extends State<questionBank> {
                         Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    addQuestio()));
+                                    addQuestio(is4Option: true,)));
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -234,7 +234,7 @@ class _questionBankState extends State<questionBank> {
           Navigator.of(context).push(
               MaterialPageRoute(
                   builder: (context) =>
-                      addQuestio()));
+                      addQuestio(is4Option: true,)));
 
         },
         child: Icon(Icons.add,),

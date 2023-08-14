@@ -132,6 +132,7 @@ class _reviseModeScreenState extends State<reviseModeScreen> {
           optionA: element['optionA'],
           option2: element['option2'],
           optionC: element['optionC'],
+          optionD: element['optionD'],
           answer: element['answer']);
       allQuestionListinEnglish.add(questionModel);
 
@@ -243,7 +244,7 @@ class _reviseModeScreenState extends State<reviseModeScreen> {
 
                     Navigator.of(context).push(new MaterialPageRoute<Null>(
                         builder: (BuildContext context) {
-                          return new previewImage(imageUrls: [questioList[question_no].image], index: 0, isFile: false,);
+                          return new previewImage(imageUrls: [questioList[question_no].image], index: 0, isFile: false, question: questioList[question_no],);
                         },
                         fullscreenDialog: true));
                   },
@@ -462,6 +463,7 @@ class _reviseModeScreenState extends State<reviseModeScreen> {
           optionA: element['optionA'],
           option2: element['option2'],
           optionC: element['optionC'],
+          optionD: element['optionD'],
           answer: element['answer']);
       questioList.add(questionModel);
 

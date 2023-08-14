@@ -16,7 +16,8 @@ import 'myTiktoks.dart';
 
 
 class adminVideoScreen extends StatefulWidget {
-  const adminVideoScreen({Key? key}) : super(key: key);
+   String family;
+   adminVideoScreen({Key? key,required this.family}) : super(key: key);
 
   @override
   State<adminVideoScreen> createState() => _adminVideoScreenState();
@@ -30,7 +31,6 @@ class _adminVideoScreenState extends State<adminVideoScreen> {
   void initState() {
     super.initState();
     getlectures();
-    String url = "https://www.youtube.com/watch?v=YE7VzlLtp-4";
 
 
   }
@@ -72,7 +72,7 @@ class _adminVideoScreenState extends State<adminVideoScreen> {
                           Navigator.of(context).push(
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      addVideoLecture(videosList: videosList,)));
+                                      addVideoLecture(videosList: videosList, family: widget.family,)));
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -101,12 +101,10 @@ class _adminVideoScreenState extends State<adminVideoScreen> {
                     ],
                   ),
                 ),
-
-                const Text(
-                  "    Video Lectures",
+                 Text(
+                 "    "+ widget.family,
                   style: TextStyle(fontFamily: "Poppins", fontSize: 27),
                 ),
-
                 SizedBox(height: 30,),
 
                 Container(
@@ -203,83 +201,65 @@ class _adminVideoScreenState extends State<adminVideoScreen> {
   }
 
 
-  Future<void> getlectures() async {
-    List<List<videoLectureModel>> vi =[];
 
+  Future<void> getlecre() async {
+    setState(() {
 
-await FirebaseFirestore.instance.collection("admin")
+    });
+    await FirebaseFirestore.instance.collection("admin")
         .doc(
         "data").collection("videos")
         .doc("lecture").collection("all").get(GetOptions(source: Source.server)).then((value) => {
-  value.docs.forEach((element) {
-    videoListModel q = videoListModel(
-        videos: element['videos']);
+      value.docs.forEach((element) {
+        videoListModel q = videoListModel(
+            videos: element['videos']);
 
-    q.videos.forEach((element) {
-      videoLectureModel l = videoLectureModel(
-          caption: element['caption'],
-          url: element['url'],
-          thumbnail: element['thumbnail'],
-          duration: element['duration'],);
-      videosList.add(l);
+        q.videos.forEach((element) {
+          videoLectureModel l = videoLectureModel(
+            caption: element['caption'],
+            url: element['url'],
+            thumbnail: element['thumbnail'],
+            duration: element['duration'],);
+          videosList.add(l);
+        });
+      })});
+
+    setState(() {
+      isEndLoading =true;
     });
-  })});
 
-
-     print(videosList.length);
-
-     setState(() {
-       isEndLoading = true;
-     });
-
-
-    // if (data.docs.isNotEmpty) {
-    //   print("exisr");
-    //   videosList =
-    //       List.from(data.docs.map((doc) => videoLectureModel.fromSnapshot(doc)));
-    //
-    //   setState(() {
-    //
-    //     isEndLoading = true;
-    //     print(videosList.length);
-    //   });
-    //
-    //   print(videosList.length);
-    // }
-    // else{
-    //   isEndLoading = true;
-    //   setState(() {
-    //
-    //   });
-    // }
   }
-  Future<void> getlecture() async {
-    var data =  await FirebaseFirestore.instance.collection("admin").doc(
+  Future<void> getlectures() async {
+
+    await FirebaseFirestore.instance.collection("admin")
+        .doc(
         "data").collection("videos")
-        .doc("lecture").collection("all")
-        .get(const GetOptions(source: Source.server));
+        .doc("lecture").collection(widget.family).get(GetOptions(source: Source.server)).then((value) => {
+      value.docs.forEach((element) {
+        videoListModel q = videoListModel(
+            videos: element['videos']);
+
+        q.videos.forEach((element) {
+          videoLectureModel l = videoLectureModel(
+            caption: element['caption'],
+            url: element['url'],
+            thumbnail: element['thumbnail'],
+            duration: element['duration'],);
+          videosList.add(l);
+          print(l.caption);
+        });
+      })});
 
 
-    if (data.docs.isNotEmpty) {
-      print("exisr");
-      videosList =
-          List.from(data.docs.map((doc) => videoLectureModel.fromSnapshot(doc)));
+    print(videosList.length);
 
-      setState(() {
-
-        isEndLoading = true;
-        print(videosList.length);
-      });
-
-      print(videosList.length);
-    }
-    else{
+    setState(() {
       isEndLoading = true;
-      setState(() {
+    });
 
-      });
-    }
+
   }
+
 
   Future<void>? _showDeleteDialog(BuildContext context, videoLectureModel model) async {
     return (
@@ -322,7 +302,7 @@ await FirebaseFirestore.instance.collection("admin")
                    FirebaseFirestore.instance.collection("admin")
                        .doc(
                        "data").collection("videos")
-                       .doc("lecture").collection("all").doc("lectures")
+                       .doc("lecture").collection(widget.family).doc("lectures")
                        .set(v.toMap());
 
                    Navigator.pop(context);

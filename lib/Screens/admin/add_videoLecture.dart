@@ -17,8 +17,9 @@ import 'package:intl/intl.dart';
 
 class addVideoLecture extends StatefulWidget {
   List<videoLectureModel> videosList = [] ;
+  String family;
 
-  addVideoLecture({Key? key,required this.videosList}) : super(key: key);
+  addVideoLecture({Key? key,required this.videosList,required this.family}) : super(key: key);
 
   @override
   State<addVideoLecture> createState() => _addVideoLectureState();
@@ -67,8 +68,12 @@ class _addVideoLectureState extends State<addVideoLecture> {
                           ),
                           Text(
                             style: TextStyle(
-                                fontFamily: "Poppins", fontSize: 25),
-                            "Add New Lecture ",),
+                                fontFamily: "PoppinRegular", fontSize: 22),
+                            "Add New Lecture in",),
+                          Text(
+                            style: TextStyle(
+                                fontFamily: "Poppins", fontSize: 24),
+                            widget.family,),
                           const SizedBox(
                             height: 30,
                           ),
@@ -208,7 +213,7 @@ class _addVideoLectureState extends State<addVideoLecture> {
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    adminVideoScreen()));
+                                                    adminVideoScreen(family: widget.family,)));
                                       },
                                       child: Material(
                                         borderRadius:
@@ -309,7 +314,7 @@ class _addVideoLectureState extends State<addVideoLecture> {
                               FirebaseFirestore.instance.collection("admin")
                                   .doc(
                                   "data").collection("videos")
-                                  .doc("lecture").collection("all").doc("lectures")
+                                  .doc("lecture").collection(widget.family).doc("lectures")
                                   .set(v.toMap());
 
 

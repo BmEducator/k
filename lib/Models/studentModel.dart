@@ -19,6 +19,9 @@ class studentModel {
   late String mode;
   late String revise;
   late String licenseType;
+  late int noOfActivation;
+  late List<dynamic> courses;
+  late List<dynamic> noOfActivations;
 
 
   studentModel({
@@ -38,6 +41,9 @@ class studentModel {
     required this.mode,
     required this.revise,
     required this.licenseType,
+    required this.courses,
+    required this.noOfActivation,
+    required this.noOfActivations,
   });
 
   Map<String, dynamic> toMap() {
@@ -58,6 +64,9 @@ class studentModel {
       "revise": revise,
       "token": token,
       "licenseType": licenseType,
+      "courses": courses,
+      "noOfActivation": noOfActivation,
+      "noOfActivations": noOfActivations,
 
     };
   }
@@ -79,6 +88,9 @@ class studentModel {
     'accessDate': accessDate,
     'revise': revise,
     'licenseType': licenseType,
+    'courses': courses,
+    'noOfActivation': noOfActivation,
+    'noOfActivations': noOfActivations,
 
   };
 
@@ -98,6 +110,9 @@ class studentModel {
         licenseType = snapshot.data()['licenseType'],
         revise = snapshot.data()['revise'],
         dni = snapshot.data()['dni'],
+        courses = snapshot.data()['courses'],
+        noOfActivation = snapshot.data()['noOfActivation'],
+        noOfActivations = snapshot.data()['noOfActivations'],
        mode = snapshot.data()['mode'];
 
 
@@ -116,6 +131,9 @@ class studentModel {
     token = data['token'];
     revise = data['revise'];
     licenseType = data['licenseType'];
+    courses = data['courses'];
     mode = data['mode'];
+    noOfActivation = data['noOfActivation'];
+    noOfActivations = data['noOfActivations'];
     dni = data['dni'];}
 }

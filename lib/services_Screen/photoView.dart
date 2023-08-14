@@ -1,20 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bmeducators/Screens/whiteboard/flutter_painte_mobile.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 import 'dart:math' as math;
 
 import 'package:photo_view/photo_view_gallery.dart';
 
+import '../Models/question.dart';
+import '../Screens/whiteboard/flutter_paintef.dart';
+
 class previewImage extends StatefulWidget {
   final PageController pageC;
+  QuestionModel question;
   final List<dynamic> imageUrls;
   final int index;
   bool isFile;
   // const previewImage({Key? key, required this.pageC, required this.imageUrls, required this.index}):super(key: key);
 
   previewImage({super.key,
+    required this.question,
     required this.imageUrls,
     required this.index,
     required this.isFile
@@ -98,11 +105,44 @@ class _previewImageState extends State<previewImage> {
             ),
             onPageChanged: (index) => setState(() => this.index = index),
           ),
-          SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                child:   IconButton(onPressed: (){Navigator.pop(context);}, icon: const Icon(Icons.close),color: Colors.white,),
-              )),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                    onTap: (){Navigator.pop(context);},
+                    child: Icon(Icons.close,color: Colors.white,)),
+                InkWell(
+                  onTap: () async {
+
+                    Navigator.of(context).push(new MaterialPageRoute<Null>(
+                        builder: (BuildContext context) {
+                          return new FlutterPainter_mobile(image: widget.imageUrls[0], question: widget.question, height:0,width:0);
+                        },
+                        fullscreenDialog: true));
+                  },
+                  child: Material(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.blue ,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 2),
+                      child: Row(
+                        children: [
+                          Icon(PhosphorIcons.pen,color: Colors.white,size: 30,),
+                          Text("  Whiteboard",style: TextStyle(color: Colors.white),)
+
+                        ],
+                      ),
+                    )
+                    ,
+                  ),
+                ),
+              ],
+            ),
+          ),
 
         ],
 

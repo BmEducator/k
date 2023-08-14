@@ -169,7 +169,7 @@ class _editQuestionState extends State<editQuestion> {
                   title:  TextField(
                     controller: _opt2Controller,
                     decoration: InputDecoration(
-                      labelText: "Option 2",
+                      labelText: "Option B",
                     ),
                   ),
                   trailing: answer == _opt2Controller.text?
@@ -235,6 +235,47 @@ class _editQuestionState extends State<editQuestion> {
               ),
 
 
+              Container(
+                width: MediaQuery.of(context).size.width * 0.9,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.red[100]),
+                child: ListTile(
+                  dense: true,
+                  contentPadding:
+                  const EdgeInsets.only(left: 15, right: 10),
+                  horizontalTitleGap: 0,
+                  visualDensity: const VisualDensity(
+                      horizontal: 0, vertical: -4),
+                  title:  TextField(
+                    controller: _opt4Controller,
+                    decoration: InputDecoration(
+                      labelText: "Option D",
+                    ),
+                  ),
+                  trailing: answer == _opt3Controller.text?
+                  CircleAvatar(
+                    foregroundImage: AssetImage("assets/tick.jpg"),
+                    radius: 15,
+                  )
+                      :InkWell(
+                    onTap: (){
+                      setState(() {
+                        answer  = _opt4Controller.text;
+                      });
+                    },
+                    child: CircleAvatar(
+                      foregroundImage: AssetImage("assets/cross.jpg"),
+                      radius: 15,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+
+
 
 
               InkWell(
@@ -250,7 +291,7 @@ class _editQuestionState extends State<editQuestion> {
                       optionA: _opt1Controller.text,
                       option2: _opt2Controller.text,
                       optionC:_opt3Controller.text,
-                      answer: answer, image: _imageUrl
+                      answer: answer, image: _imageUrl, optionD: _opt4Controller.text
                   );
                   FirebaseFirestore.instance.collection("questions")
                       .doc(widget.questionModel.statement).delete();

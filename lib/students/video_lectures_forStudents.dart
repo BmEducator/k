@@ -11,7 +11,8 @@ import '../utilis/videos_Lecture_Scree.dart';
 import 'customVideoPlayerScree.dart';
 
 class Video_Lectures_students extends StatefulWidget {
-  const Video_Lectures_students({Key? key}) : super(key: key);
+  String family;
+   Video_Lectures_students({Key? key,required this.family}) : super(key: key);
 
   @override
   State<Video_Lectures_students> createState() => _Video_Lectures_studentsState();
@@ -188,7 +189,7 @@ class _Video_Lectures_studentsState extends State<Video_Lectures_students> {
     await FirebaseFirestore.instance.collection("admin")
         .doc(
         "data").collection("videos")
-        .doc("lecture").collection("all").get(GetOptions(source: Source.server)).then((value) => {
+        .doc("lecture").collection(widget.family).get(GetOptions(source: Source.server)).then((value) => {
       value.docs.forEach((element) {
         videoListModel q = videoListModel(
             videos: element['videos']);
@@ -208,7 +209,7 @@ class _Video_Lectures_studentsState extends State<Video_Lectures_students> {
     });
 
   }
-  Future<void> getlectures() async {
+  Future<void> getletures() async {
     isLoading = true;
     setState(() {
 

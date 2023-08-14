@@ -105,7 +105,7 @@ class _notificationsScreenState extends State<notificationsScreen> {
   }
 
   item(notificationModel model){
-    var s = DateTime.fromMillisecondsSinceEpoch(int.parse(model.timestamp));
+    var s = DateTime.fromMillisecondsSinceEpoch(model.timestamp);
     var month = DateFormat.MMMM().format(s);
     var day = DateFormat.d().format(s);
     var todat = DateFormat.d().format(DateTime.now());

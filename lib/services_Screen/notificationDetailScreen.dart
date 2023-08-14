@@ -68,7 +68,7 @@ class _notificationDetailScreenState extends State<notificationDetailScreen> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => mainMenu(isfromLogin: false, checkUpdate: true,)));
+                              builder: (context) => mainMenu(isfromLogin: false, checkUpdate: false,)));
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),

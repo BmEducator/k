@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'dart:math';
 
 import 'package:bmeducators/Screens/admin/BAAB.dart';
+import 'package:bmeducators/Screens/homeScreen.dart';
 import 'package:bmeducators/services_Screen/aboutUs_Scree.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -58,6 +59,12 @@ class _loginScreenState extends State<loginScreen> {
 
   }
 
+  Future<bool> willpop() async {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => MainScreen()));
+    return  true;
+
+  }
   @override
   Widget build(BuildContext context) {
     return !_isLoading?GestureDetector(
@@ -66,242 +73,245 @@ class _loginScreenState extends State<loginScreen> {
       },
       child: Scaffold(
           backgroundColor:Color(0xff111336),
-          body: SingleChildScrollView(
-            child: Container(
-              width: MediaQuery.of(context).size.width ,
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors:[
-                        Color(0xff0033cc),
-                        Color(0xff111336),
+          body: WillPopScope(
+            onWillPop: willpop,
+            child: SingleChildScrollView(
+              child: Container(
+                width: MediaQuery.of(context).size.width ,
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors:[
+                          Color(0xff0033cc),
+                          Color(0xff111336),
 
-                      ] ,
+                        ] ,
 
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomCenter
-                  )
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(25.0),
-                child: Column(
-                  children: [
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomCenter
+                    )
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: Column(
+                    children: [
 
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.1,
-                    ),
-                    InkWell(
-                      onDoubleTap: (){
-                        Navigator.pushReplacement(
-                            context, MaterialPageRoute(
-                            builder: (context) => baab()));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 30),
-                        child: Image.asset("assets/splashlogofull.png"),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.1,
                       ),
-                    ),
-                    SizedBox(height: 50,),
-                    Material(
-                      elevation: 5,
-                      borderRadius: BorderRadius.circular(10),
-                      clipBehavior: Clip.antiAlias,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(width: 1),
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        child:   TextField(
-                          controller: _emailController,
-                          decoration:  InputDecoration(
-                            filled: true,
-                            contentPadding: EdgeInsets.only(
-                                left: 20
-                            ),
-                            border: InputBorder.none,
-                            hintText: "Email",
-                            labelText: "Email",
-                            errorText: !isEmailEntered ? "* Enter valid email" : null,
-                          ),
-
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    Material(
-                      elevation: 5,
-                      borderRadius: BorderRadius.circular(10),
-                      clipBehavior: Clip.antiAlias,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(width: 1),
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: TextField(
-                                  obscureText: isObscurePass,
-                                  controller: _passwordController,
-
-                                  decoration: const InputDecoration(
-                                    filled: true,
-                                    contentPadding: EdgeInsets.only(
-                                        left: 20
-                                    ),
-                                    border: InputBorder.none,
-                                    hintText: "Password",
-                                  ),
-
-                                )),
-                            IconButton(onPressed: (){
-                              setState(() {
-                                isObscurePass = !isObscurePass;
-                              });
-                            }, icon:Icon(Icons.remove_red_eye_outlined,color:!isObscurePass?Colors.blue: Colors.grey,))
-
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-
-                    Visibility(
-                      visible: isError,
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: GestureDetector(
-                            onTap: () {
-                            },
-                            child: const Text(
-                              "* Invalid Email or Password",
-                              style: TextStyle(color: Colors.red,fontFamily: "PoppinRegular"),
-                              textAlign: TextAlign.start,
-                            )),
-                      ),
-                    ),
-                    Visibility(
-                      visible: loginAt != "",
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: GestureDetector(
-                            onTap: () {
-
-                            },
-                            child: const Text(
-                              "* Your Account is currently Login in Another Device ",
-                              style: TextStyle(color: Colors.amber,fontFamily: "PoppinRegular"),
-                              textAlign: TextAlign.start,
-                            )),
-                      ),
-                    ),
-                    Visibility(
-                      visible: loginAt != "",
-                      child: SizedBox(
-                        width: double.infinity,
+                      InkWell(
+                        onDoubleTap: (){
+                          Navigator.pushReplacement(
+                              context, MaterialPageRoute(
+                              builder: (context) => baab()));
+                        },
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "    * ${loginAt} ",
-                                style: TextStyle(color: Colors.white,fontFamily: "PoppinRegular"),
-                                textAlign: TextAlign.start,
+                          padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 30),
+                          child: Image.asset("assets/splashlogofull.png"),
+                        ),
+                      ),
+                      SizedBox(height: 50,),
+                      Material(
+                        elevation: 5,
+                        borderRadius: BorderRadius.circular(10),
+                        clipBehavior: Clip.antiAlias,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(width: 1),
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          child:   TextField(
+                            controller: _emailController,
+                            decoration:  InputDecoration(
+                              filled: true,
+                              contentPadding: EdgeInsets.only(
+                                  left: 20
                               ),
-                              InkWell(
-                                onTap: (){
-                                  showHelp(context);
-                                },
-                                child: Row(
-                                  children: [
-                                    Text("Help ",style: TextStyle(color: Colors.lightBlueAccent),),
-                                    Icon(Icons.help_outline,color: Colors.lightBlueAccent,),
-                                    Text("    ")
-                                  ],
-                                ),
-                              )
+                              border: InputBorder.none,
+                              hintText: "Enter NEI no",
+                              labelText: "NEI",
+                              errorText: !isEmailEntered ? "* Enter valid email" : null,
+                            ),
+
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Material(
+                        elevation: 5,
+                        borderRadius: BorderRadius.circular(10),
+                        clipBehavior: Clip.antiAlias,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(width: 1),
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: TextField(
+                                    obscureText: isObscurePass,
+                                    controller: _passwordController,
+
+                                    decoration: const InputDecoration(
+                                      filled: true,
+                                      contentPadding: EdgeInsets.only(
+                                          left: 20
+                                      ),
+                                      border: InputBorder.none,
+                                      hintText: "Password",
+                                    ),
+
+                                  )),
+                              IconButton(onPressed: (){
+                                setState(() {
+                                  isObscurePass = !isObscurePass;
+                                });
+                              }, icon:Icon(Icons.remove_red_eye_outlined,color:!isObscurePass?Colors.blue: Colors.grey,))
+
                             ],
                           ),
                         ),
                       ),
-                    ),
-                    // Container(
-                    //   height: 50,
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //     children: [
-                    //       GestureDetector(
-                    //           onTap: () {
-                    //           },
-                    //           child: const Text(
-                    //             "Forget password?",
-                    //             style: TextStyle(color: Colors.yellow,
-                    //                 fontSize: 14,fontFamily: "PoppinRegular"),
-                    //             textAlign: TextAlign.right,
-                    //           )),
-                    //       GestureDetector(
-                    //           onTap: () {
-                    //             Navigator.of(context).push(
-                    //                 MaterialPageRoute(
-                    //                     builder: (context) =>
-                    //                         AboutScreen()));
-                    //           },
-                    //           child: const Text(
-                    //             "Register",
-                    //             style: TextStyle(color: Colors.yellow,
-                    //                 fontSize: 14,fontFamily: "PoppinRegular"),
-                    //             textAlign: TextAlign.right,
-                    //           )),
-                    //     ],
-                    //   ),
-                    // ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    InkWell(
-                      onTap: (){
-                        login();
-                      },
-                      child: Material(
-                        borderRadius: const BorderRadius.all(
-                            Radius.circular(8)),
-                        elevation: 6,
-                        color: Colors.yellow,
-                        child: Container(
-                          height: 40,
+                      const SizedBox(
+                        height: 10,
+                      ),
+
+                      Visibility(
+                        visible: isError,
+                        child: SizedBox(
                           width: double.infinity,
-                          alignment: Alignment.center,
-                          child: !_isLoading
-                              ? const Text(
-                            'Log in',
-                            style: TextStyle(color: Colors.black,
-                                fontSize: 17,fontFamily: "Poppins"),
-                          )
-                              : const CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 3,
+                          child: GestureDetector(
+                              onTap: () {
+                              },
+                              child: const Text(
+                                "* Invalid Email or Password",
+                                style: TextStyle(color: Colors.red,fontFamily: "PoppinRegular"),
+                                textAlign: TextAlign.start,
+                              )),
+                        ),
+                      ),
+                      Visibility(
+                        visible: loginAt != "",
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: GestureDetector(
+                              onTap: () {
+
+                              },
+                              child: const Text(
+                                "* Your Account is currently Login in Another Device ",
+                                style: TextStyle(color: Colors.amber,fontFamily: "PoppinRegular"),
+                                textAlign: TextAlign.start,
+                              )),
+                        ),
+                      ),
+                      Visibility(
+                        visible: loginAt != "",
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "    * ${loginAt} ",
+                                  style: TextStyle(color: Colors.white,fontFamily: "PoppinRegular"),
+                                  textAlign: TextAlign.start,
+                                ),
+                                InkWell(
+                                  onTap: (){
+                                    showHelp(context);
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text("Help ",style: TextStyle(color: Colors.lightBlueAccent),),
+                                      Icon(Icons.help_outline,color: Colors.lightBlueAccent,),
+                                      Text("    ")
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                      // Container(
+                      //   height: 50,
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       GestureDetector(
+                      //           onTap: () {
+                      //           },
+                      //           child: const Text(
+                      //             "Forget password?",
+                      //             style: TextStyle(color: Colors.yellow,
+                      //                 fontSize: 14,fontFamily: "PoppinRegular"),
+                      //             textAlign: TextAlign.right,
+                      //           )),
+                      //       GestureDetector(
+                      //           onTap: () {
+                      //             Navigator.of(context).push(
+                      //                 MaterialPageRoute(
+                      //                     builder: (context) =>
+                      //                         AboutScreen()));
+                      //           },
+                      //           child: const Text(
+                      //             "Register",
+                      //             style: TextStyle(color: Colors.yellow,
+                      //                 fontSize: 14,fontFamily: "PoppinRegular"),
+                      //             textAlign: TextAlign.right,
+                      //           )),
+                      //     ],
+                      //   ),
+                      // ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      InkWell(
+                        onTap: (){
+                          login();
+                        },
+                        child: Material(
+                          borderRadius: const BorderRadius.all(
+                              Radius.circular(8)),
+                          elevation: 6,
+                          color: Colors.yellow,
+                          child: Container(
+                            height: 40,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            child: !_isLoading
+                                ? const Text(
+                              'Log in',
+                              style: TextStyle(color: Colors.black,
+                                  fontSize: 17,fontFamily: "Poppins"),
+                            )
+                                : const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
 
-                    const SizedBox(
-                      height: 12,
-                    ),
+                      const SizedBox(
+                        height: 12,
+                      ),
 
 
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -411,7 +421,7 @@ class _loginScreenState extends State<loginScreen> {
     };
   }
 
-  verifyInput() {
+  verfyInput() {
 
 
     final bool isValidMail =RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_'{|}-]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(_emailController.text);
@@ -440,7 +450,7 @@ class _loginScreenState extends State<loginScreen> {
     });
     DocumentSnapshot snapp = await FirebaseFirestore.instance.collection(
         "admin").doc("data").collection("students").doc("login").collection(
-        "logins").doc(_emailController.text).get();
+        "logins").doc(_emailController.text+"@gmail.com").get();
 
     if (snapp.exists && _passwordController.text == snapp['password']) {
 
@@ -453,19 +463,19 @@ class _loginScreenState extends State<loginScreen> {
         });
 
          await AuthMethods().signUpUser(
-          email: _emailController.text,
+          email: _emailController.text+"@gmail.com",
           password: _passwordController.text,
         );
 
 
         await AuthMethods().loginUser(
-            email: _emailController.text, password: _passwordController.text);
+            email: _emailController.text+"@gmail.com", password: _passwordController.text);
 
 
 
         DocumentSnapshot snap = await FirebaseFirestore.instance.collection(
             "admin").doc("data").collection("students").doc("login")
-            .collection("logins").doc(_emailController.text)
+            .collection("logins").doc(_emailController.text+"@gmail.com")
             .get(GetOptions(source: Source.server));
 
         print(snap['name']);
@@ -474,8 +484,11 @@ class _loginScreenState extends State<loginScreen> {
         pref.setString("myFamily", snap['licenseType']);
         print("family");
         print(pref.getString("myFamily"));
-        pref.setString("email", _emailController.text);
+        pref.setString("email", _emailController.text+"@gmail.com");
+
         pref.setStringList("families", []);
+       List<String>? courses = (snap['courses'] as List )?.map((item) => item as String)?.toList();
+        pref.setStringList("myCourses", courses!);
         pref.setString("lastUpdateAccessTime", "");
         String _imageUrl = snap['profileImage'];
         // String _imageUrl = "https://i.pinimg.com/736x/da/4f/ad/da4fad3f0c9549a86a70dc90d9208e8d.jpg";
@@ -641,7 +654,7 @@ class _loginScreenState extends State<loginScreen> {
       var accessTimestamp;
       var tdy = DateFormat('dd-MM-yyyy').format(today);
 
-      DatabaseReference ref = FirebaseDatabase.instance.ref().child("students").child(email.substring(0,_emailController.text.indexOf("@"))).
+      DatabaseReference ref = FirebaseDatabase.instance.ref().child("students").child(email).
       child("accessLimit").child("limit");
 
       DatabaseEvent event = await ref.once();

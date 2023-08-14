@@ -709,7 +709,7 @@ class _create_quizState extends State<create_quiz> {
                               optionA: _opt1Controller.text,
                               option2: _opt2Controller.text,
                               optionC: _opt3Controller.text,
-                              answer: a[answer - 1]);
+                              answer: a[answer - 1], optionD: _opt4Controller.text);
 
                           questionsList.add(q);
                           innerSetState(() {});

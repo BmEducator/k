@@ -8,6 +8,7 @@ class QuestionModel {
   late String optionA;
   late String option2;
   late String optionC;
+  late String optionD;
   late String answer;
 
   QuestionModel({
@@ -16,6 +17,7 @@ class QuestionModel {
     required this.optionA,
     required this.option2,
     required this.optionC,
+    required this.optionD,
     required this.answer
 
   });
@@ -27,6 +29,7 @@ class QuestionModel {
       "optionA": optionA,
       "option2": option2,
       "optionC": optionC,
+      "optionD": optionD,
       "answer": answer,
     };
   }
@@ -37,6 +40,7 @@ class QuestionModel {
     'optionA': optionA,
     'option2': option2,
     'optionC': optionC,
+    'optionD': optionD,
     'answer': answer,
 
   };
@@ -47,6 +51,7 @@ class QuestionModel {
         optionA = snapshot.data()['optionA'],
         option2 = snapshot.data()['option2'],
         optionC = snapshot.data()['optionC'],
+        optionD = snapshot.data()['optionD'],
         answer = snapshot.data()['answer'];
 
   QuestionModel.fromMap(Map<String,dynamic> data){
@@ -55,6 +60,7 @@ class QuestionModel {
     optionA = data['optionA'];
     option2 = data['option2'];
     optionC = data['optionC'];
+    optionD = data['optionD'];
     answer = data['answer'];
   }
 }

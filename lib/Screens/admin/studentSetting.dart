@@ -19,25 +19,34 @@ class studentSettings extends StatefulWidget {
 
 class _studentSettingsState extends State<studentSettings> {
   String accessDate = "";
+  String tempaccessDate = "";
   String mode = "";
   String revise = "";
+  String isTranslation = "";
   String translationLanguge = "";
+  List<String> noOfActivations = [];
+
+
 
 
   @override
   void initState() {
     // TODO: implement initState
-    translationLanguge=widget.student.translation;
+    translationLanguge = widget.student.translation;
+    print(widget.student.translation);
     mode = widget.student.mode;
     revise = widget.student.revise;
 
   if(widget.student.accessDate !=""){
     var f = new DateFormat('dd-MM-yyyy');
-    accessDate =f.format(DateTime.fromMillisecondsSinceEpoch(int.parse(widget.student.accessDate))).toString();
+    tempaccessDate =f.format(DateTime.fromMillisecondsSinceEpoch(int.parse(widget.student.accessDate))).toString();
     setState(() {
 
     });
   }
+
+    List<String>? noOf = ( widget.student.noOfActivations as List )?.map((item) => item as String)?.toList();
+    noOfActivations = noOf!;
     super.initState();
   }
   
@@ -84,9 +93,8 @@ class _studentSettingsState extends State<studentSettings> {
                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                    children: [
                      Text("Study Mode",style: TextStyle(fontSize: 20,fontFamily: "Poppins"),),
-                     Switch(value: mode == "Study", onChanged: (r){
-                       mode = "Study";
-
+                     Switch(
+                         value: mode == "Study" || mode == "Both", onChanged: (r) {
                        _showModeDialog(context, "Study");
                      }),
                    ],
@@ -100,11 +108,9 @@ class _studentSettingsState extends State<studentSettings> {
                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                    children: [
                      Text("Exam Mode",style: TextStyle(fontSize: 20,fontFamily: "Poppins"),),
-                     Switch(value: mode == "Exam", onChanged: (r){
-                       mode = "Exam";
-
+                     Switch(
+                         value: mode == "Exam" || mode == "Both", onChanged: (r) {
                        _showModeDialog(context, "Exam");
-
                      }),
                    ],
                  ),
@@ -131,12 +137,13 @@ class _studentSettingsState extends State<studentSettings> {
                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                    children: [
                      Text("Google Translation",style: TextStyle(fontSize: 20,fontFamily: "Poppins"),),
-                     Switch(value:translationLanguge != "false" && translationLanguge != "en", onChanged: (r){
+                     Switch(value:translationLanguge == "true", onChanged: (r){
                      if(r){
                        translationLanguge =  "true";
-
+                       isTranslation = "true";
                      }
                      else{
+                       isTranslation = "false";
                        translationLanguge = "false";
                      }
 
@@ -146,10 +153,35 @@ class _studentSettingsState extends State<studentSettings> {
                    ],
                  ),
                ),
-               SizedBox(height: 35,),
+               SizedBox(height: 15,),
+               Container(
+                 padding: EdgeInsets.only(right: 60),
+                 width: MediaQuery
+                     .of(context)
+                     .size
+                     .width * 1,
+                 child: Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                   children: [
+                     Text("No of Activations  ", style: TextStyle(
+                         fontSize: 15, fontFamily: "Poppins"),),
+                     InkWell(
+                       onTap: (){
+                         _showNoOfActivationDialog(context);
+                       },
+                       child: Row(
+                         children: [
+                           Text(noOfActivations.length.toString(),style: TextStyle(fontFamily: "Poppins",fontSize: 18),),
+                           Icon(Icons.arrow_drop_down,size: 45,color: Colors.blue,)
+                         ],
+                       ),
+                     )
+                   ],
+                 ),
+               ),
+               SizedBox(height: 15,),
 
-               Visibility(visible: accessDate =="",child:
-
+               Visibility(visible: tempaccessDate =="",child:
                InkWell(
                  onTap: (){
                    _showLimitDialog();
@@ -167,27 +199,43 @@ class _studentSettingsState extends State<studentSettings> {
 
 
                SizedBox(height: 15,),
-               Visibility(visible: accessDate !="",child:   Text("Student is Limited to : ${accessDate}",style: TextStyle(fontFamily: "Poppins",fontSize: 17,color: Colors.red),)
+               Visibility(visible: tempaccessDate !="",child:   Text("Student is Limited to : ${tempaccessDate}",style: TextStyle(fontFamily: "Poppins",fontSize: 17,color: Colors.red),)
                ),
                SizedBox(height: 20,),
-               Visibility(visible: accessDate !="",child:
-               Padding(
-                 padding: const EdgeInsets.only(bottom: 20),
-                 child: InkWell(
-                   onTap: (){
-                     _showRemoveLimitDialog(context);
-                   },
-                   child: Material(
-                       borderRadius: BorderRadius.circular(5),
-                       color: Colors.red,
-                       elevation: 5,
-                       child: Padding(
-                         padding: const EdgeInsets.all(8.0),
-                         child: Text("     Remove Limit     ",style: TextStyle(fontFamily: "PoppinRegular",color: Colors.white,fontSize: 18),),
-                       )),
-                 ),
+               InkWell(
+                 onTap: (){
+                   _showRenewLimitDialog();
+                 },
+                 child: Material(
+                     borderRadius: BorderRadius.circular(5),
+                     color: Colors.blue[500],
+                     elevation: 5,
+                     child: Padding(
+                       padding: const EdgeInsets.all(8.0),
+                       child: Text(" Renew Activation",style: TextStyle(fontFamily: "PoppinRegular",color: Colors.white,fontSize: 18),),
+                     )),
                ),
-               ),
+
+               // Visibility(visible: tempaccessDate !="",child:
+               // Padding(
+               //   padding: const EdgeInsets.only(bottom: 20),
+               //   child: InkWell(
+               //     onTap: (){
+               //       _showRemoveLimitDialog(context);
+               //     },
+               //     child: Material(
+               //         borderRadius: BorderRadius.circular(5),
+               //         color: Colors.red,
+               //         elevation: 5,
+               //         child: Padding(
+               //           padding: const EdgeInsets.all(8.0),
+               //           child: Text("     Remove Limit     ",style: TextStyle(fontFamily: "PoppinRegular",color: Colors.white,fontSize: 18),),
+               //         )),
+               //   ),
+               // ),
+               // ),
+               SizedBox(height: 20,),
+
 
                InkWell(
                  onTap: (){
@@ -202,6 +250,8 @@ class _studentSettingsState extends State<studentSettings> {
                        child: Text(" Reset Login Devices ",style: TextStyle(fontFamily: "PoppinRegular",color: Colors.white,fontSize: 18),),
                      )),
                ),
+               SizedBox(height: 20,),
+
              ],
            ),
           )
@@ -261,7 +311,7 @@ class _studentSettingsState extends State<studentSettings> {
                       child: InkWell(
                         onTap: () async {
 
-                          await FirebaseDatabase.instance.ref().child("students").child(widget.student.id.substring(0,widget.student.id.indexOf("@"))).
+                          await FirebaseDatabase.instance.ref().child("students").child(widget.student.dni).
                           child("accessLimit").child("limit").set({
                             "timestamp":accessDate ,
                           });
@@ -273,7 +323,7 @@ class _studentSettingsState extends State<studentSettings> {
                           update({"accessDate":accessDate});
                           var f = new DateFormat('dd-MM-yyyy');
 
-                          accessDate =f.format(DateTime.fromMillisecondsSinceEpoch(int.parse(accessDate))).toString();
+                          tempaccessDate =f.format(DateTime.fromMillisecondsSinceEpoch(int.parse(accessDate))).toString();
                           widget.student.accessDate = accessDate;
                           Navigator.pop(context);
                           setState(() {
@@ -303,6 +353,103 @@ class _studentSettingsState extends State<studentSettings> {
           );
         });
   }
+  Future<void> _showRenewLimitDialog() {
+    TextEditingController controller = TextEditingController();
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const Icon(Icons.close),
+                        ),
+                      ),
+                      Text("               Select New Limit",style: TextStyle(fontFamily: "Poppins"),)
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                      height: 100,
+                      child:CupertinoDatePicker(
+                        dateOrder: DatePickerDateOrder.dmy,
+                        mode: CupertinoDatePickerMode.date,
+                        initialDateTime: DateTime.now().add(Duration(days: 1)),
+                        onDateTimeChanged: (DateTime newDate){
+                          accessDate = newDate.millisecondsSinceEpoch.toString();
+                          // dateOfbirth = newDate;
+                        },
+                      )
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(40.0),
+                    child: Material(
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
+                      elevation: 6,
+                      color: Colors.blue,
+                      child: InkWell(
+                        onTap: () async {
+
+                          await FirebaseDatabase.instance.ref().child("students").child(widget.student.dni).
+                          child("accessLimit").child("limit").set({
+                            "timestamp":accessDate ,
+                          });
+
+                          noOfActivations.add(DateTime.now().millisecondsSinceEpoch.toString());
+
+                          int renewNo = widget.student.noOfActivation +1;
+                          await FirebaseFirestore.instance.collection("admin").doc(
+                              "data").collection("students").doc(
+                              "allStudents").collection("allStudents")
+                              .doc(widget.student.email).
+                          update({"accessDate":accessDate,
+                          "noOfActivations":noOfActivations},);
+                          var f = new DateFormat('dd-MM-yyyy');
+
+                          tempaccessDate =f.format(DateTime.fromMillisecondsSinceEpoch(int.parse(accessDate))).toString();
+                          widget.student.accessDate = accessDate;
+                          Navigator.pop(context);
+                          setState(() {
+
+                          });
+
+
+                        },
+                        child: Container(
+                          height: 40,
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          child: const Text(
+                            'Save ',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17,
+                                fontFamily: "Poppins"),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
 
   Future<void>? _showRemoveLimitDialog(BuildContext context ) async {
     return (
@@ -327,6 +474,7 @@ class _studentSettingsState extends State<studentSettings> {
                           "allStudents").collection("allStudents")
                           .doc(widget.student.email).
                       update({"accessDate":""});
+                      tempaccessDate = "";
                       accessDate = "";
                       Navigator.pop(context);
                       setState(() {
@@ -345,12 +493,13 @@ class _studentSettingsState extends State<studentSettings> {
   }
 
   Future<void>? _showTranslationDialog(BuildContext context ) async {
+    print(translationLanguge);
     return (
         await showDialog(context: context,
             builder: (context)
             =>
                 AlertDialog(
-                  content:  Text(widget.student.translation == "false"?"Do you want to Activate Language Translator?":"Do you want to Remove Language Translator?",
+                  content:  Text(translationLanguge != "false"?"Do you want to Activate Language Translator?":"Do you want to Remove Language Translator?",
                     style: TextStyle(fontFamily: "PoppinRegular"),),
                   actions: [
                     TextButton(onPressed: () {
@@ -364,10 +513,10 @@ class _studentSettingsState extends State<studentSettings> {
                           "data").collection("students").doc(
                           "allStudents").collection("allStudents")
                           .doc(widget.student.email).
-
                       update({
                         "translation":translationLanguge
                       });
+
                       Navigator.pop(context);
                       setState(() {
 
@@ -397,46 +546,85 @@ class _studentSettingsState extends State<studentSettings> {
   Future<void>? _showModeDialog(BuildContext context, String Mode) async {
     return (
         await showDialog(context: context,
-            builder: (context)
-            =>
+            builder: (context) =>
                 AlertDialog(
                   content: const Text("Do you want to Change Mode?",
-                    style: TextStyle(fontFamily: "PoppinRegular"),),
+                    style: TextStyle(
+                        fontFamily: "PoppinRegular", fontSize: 14),),
                   actions: [
                     TextButton(onPressed: () {
                       Navigator.pop(context);
                     },
                       child: const Text(
-                          "No", style: TextStyle(fontFamily: "Poppins")),),
-                    TextButton(onPressed: () async {
+                          "No", style: TextStyle(
+                          fontFamily: "Poppins", fontSize: 14)),),
+                    TextButton(
+                      onPressed: () async {
+                        if(Mode == "Exam"){
+                          print (mode + "---");
 
-                      await FirebaseFirestore.instance.collection("admin").doc(
-                          "data").collection("students").doc(
-                          "allStudents").collection("allStudents")
-                          .doc(widget.student.email).update({
+                          if(mode == "Exam" || mode == "Both"){
+                            mode = "Study";
+                            print("1");
+                            print(mode);
 
-                        "mode":mode
-                      });
-                      setState(() {
+                          }
+                          else if(mode == "Study"){
+                            mode = "Both";
+                            print("2");
 
-                      });
+                            print(mode);
+                          }
+                        }
+                        else if(Mode == "Study"){
+                          print (mode + "---");
 
-                      Navigator.pop(context);
+                          if(mode == "Study" || mode == "Both"){
+                            mode = "Exam";
+                            print("3");
 
-                      setState(() {
+                            print(mode);
 
-                      });
+                          }
+                          else if(mode == "Exam"){
+                            mode = "Both";
+                            print("4");
 
-                    },
+                            print(mode);
+                          }
+
+                        }
+
+                        await FirebaseFirestore.instance.collection("admin")
+                            .doc(
+                            "data").collection("students").doc(
+                            "allStudents").collection("allStudents")
+                            .doc(widget.student.email)
+                            .update({
+
+                          "mode": mode
+                        });
+
+                        setState(() {
+
+                        });
+
+                        Navigator.pop(context);
+
+                        setState(() {
+
+                        });
+                      },
                       child: const Text("Yes", style: TextStyle(
-                          color: Colors.grey, fontFamily: "Poppins")),),
+                          color: Colors.grey,
+                          fontFamily: "Poppins",
+                          fontSize: 14)),),
                   ],
                 )
         )
     );
-
-
   }
+
   Future<void>? _showReviseDialog(BuildContext context, String r) async {
     return (
         await showDialog(context: context,
@@ -512,6 +700,50 @@ class _studentSettingsState extends State<studentSettings> {
 
 
   }
+
+  Future<void> _showNoOfActivationDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+
+        builder: (BuildContext context) {
+          return Dialog(
+              child:SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width *0.2,
+                  child: Column(
+                    children: [
+                      Text("  Date of Activation"),
+                      ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          DateFormat dateformat = DateFormat("yyyy-MM-dd");
+                          String s;
+                          s =  dateformat.format(DateTime.fromMillisecondsSinceEpoch(int.parse(noOfActivations[index])));
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 0),
+                            child: Chip(
+                              backgroundColor: Colors.lightBlue[100],
+                              label: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text("  "+(index+1).toString()+ "   "),
+                                  Text(s,style: TextStyle(fontFamily: "PoppinRegular"),),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount:noOfActivations.length,
+                      )
+                    ],
+                  ),
+                ),
+              ));
+        });
+  }
+
 
 
 }

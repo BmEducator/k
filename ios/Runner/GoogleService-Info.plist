@@ -26,5 +26,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:470670777580:ios:5397d1424574f5e0c259c9</string>
+	<key>DATABASE_URL</key>
+	<string>https://bmeducator-61e1e-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

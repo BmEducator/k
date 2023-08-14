@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:bmeducators/Screens/admin/admin_Screen.dart';
 import 'package:bmeducators/services_Screen/aboutUs_Scree.dart';
+import 'package:bmeducators/students/login_Screen.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -50,181 +51,190 @@ class _baabState extends State<baab> {
     pref = await SharedPreferences.getInstance();
 
   }
+  Future<bool> willpop() async {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => loginScreen()));
+    return  true;
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor:Color(0xff111336),
-        body: SingleChildScrollView(
-          child: Container(
-            width: MediaQuery.of(context).size.width ,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors:[
-                      Color(0xff0033cc),
-                      Color(0xffffffff),
+        body: WillPopScope(
+          onWillPop: willpop,
+          child: SingleChildScrollView(
+            child: Container(
+              width: MediaQuery.of(context).size.width ,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      colors:[
+                        Color(0xff0033cc),
+                        Color(0xffffffff),
 
-                    ] ,
+                      ] ,
 
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomCenter
-                )
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: Column(
-                children: [
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomCenter
+                  )
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: Column(
+                  children: [
 
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
-                    child: Image.asset("assets/splashlogofull.png"),
-                  ),
-                  Text("Admin's Only",style: TextStyle(fontFamily: "Poppins",fontSize: 18,color: Colors.white),),
-                  SizedBox(height: 50,),
-                  Material(
-                    elevation: 5,
-                    borderRadius: BorderRadius.circular(10),
-                    clipBehavior: Clip.antiAlias,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(width: 1),
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      child:   TextField(
-                        controller: _emailController,
-                        decoration:  InputDecoration(
-                          filled: true,
-                          contentPadding: EdgeInsets.only(
-                              left: 20
-                          ),
-                          border: InputBorder.none,
-                          hintText: "Email",
-                          labelText: "Email",
-                          errorText: !isEmailEntered ? "* Enter valid email" : null,
-                        ),
-
-                      ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.1,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Material(
-                    elevation: 5,
-                    borderRadius: BorderRadius.circular(10),
-                    clipBehavior: Clip.antiAlias,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(width: 1),
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                              child: TextField(
-                                obscureText: isObscurePass,
-                                controller: _passwordController,
-
-                                decoration: const InputDecoration(
-                                  filled: true,
-                                  contentPadding: EdgeInsets.only(
-                                      left: 20
-                                  ),
-                                  border: InputBorder.none,
-                                  hintText: "Password",
-                                ),
-
-                              )),
-                          IconButton(onPressed: (){
-                            setState(() {
-                              isObscurePass = !isObscurePass;
-                            });
-                          }, icon:Icon(Icons.remove_red_eye_outlined,color:!isObscurePass?Colors.blue: Colors.grey,))
-
-                        ],
-                      ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
+                      child: Image.asset("assets/splashlogofull.png"),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-
-                  Visibility(
-                    visible: isError,
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: GestureDetector(
-                          onTap: () {
-                          },
-                          child: const Text(
-                            "* Invalid Email or Password",
-                            style: TextStyle(color: Colors.red,fontFamily: "PoppinRegular"),
-                            textAlign: TextAlign.start,
-                          )),
-                    ),
-                  ),
-                  Visibility(
-                    visible: loginAt != "",
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: GestureDetector(
-                          onTap: () {
-
-                          },
-                          child: const Text(
-                            "* Your Account is currently Login in Another Device ",
-                            style: TextStyle(color: Colors.amber,fontFamily: "PoppinRegular"),
-                            textAlign: TextAlign.start,
-                          )),
-                    ),
-                  ),
-
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  InkWell(
-                    onTap: (){
-                      login();
-                    },
-                    child: Material(
-                      borderRadius: const BorderRadius.all(
-                          Radius.circular(8)),
-                      elevation: 6,
-                      color: Colors.yellow,
+                    Text("Admin's Only",style: TextStyle(fontFamily: "Poppins",fontSize: 18,color: Colors.white),),
+                    SizedBox(height: 50,),
+                    Material(
+                      elevation: 5,
+                      borderRadius: BorderRadius.circular(10),
+                      clipBehavior: Clip.antiAlias,
                       child: Container(
-                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(width: 1),
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        child:   TextField(
+                          controller: _emailController,
+                          decoration:  InputDecoration(
+                            filled: true,
+                            contentPadding: EdgeInsets.only(
+                                left: 20
+                            ),
+                            border: InputBorder.none,
+                            hintText: "Email",
+                            labelText: "Email",
+                            errorText: !isEmailEntered ? "* Enter valid email" : null,
+                          ),
+
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    Material(
+                      elevation: 5,
+                      borderRadius: BorderRadius.circular(10),
+                      clipBehavior: Clip.antiAlias,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(width: 1),
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: TextField(
+                                  obscureText: isObscurePass,
+                                  controller: _passwordController,
+
+                                  decoration: const InputDecoration(
+                                    filled: true,
+                                    contentPadding: EdgeInsets.only(
+                                        left: 20
+                                    ),
+                                    border: InputBorder.none,
+                                    hintText: "Password",
+                                  ),
+
+                                )),
+                            IconButton(onPressed: (){
+                              setState(() {
+                                isObscurePass = !isObscurePass;
+                              });
+                            }, icon:Icon(Icons.remove_red_eye_outlined,color:!isObscurePass?Colors.blue: Colors.grey,))
+
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+
+                    Visibility(
+                      visible: isError,
+                      child: SizedBox(
                         width: double.infinity,
-                        alignment: Alignment.center,
-                        child: !_isLoading
-                            ? const Text(
-                          'Log in',
-                          style: TextStyle(color: Colors.black,
-                              fontSize: 17,fontFamily: "Poppins"),
-                        )
-                            :  Center(
-                            child: LoadingAnimationWidget.staggeredDotsWave(
-                              color: Colors.blue,
-                              size: 40,
+                        child: GestureDetector(
+                            onTap: () {
+                            },
+                            child: const Text(
+                              "* Invalid Email or Password",
+                              style: TextStyle(color: Colors.red,fontFamily: "PoppinRegular"),
+                              textAlign: TextAlign.start,
                             )),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                    Visibility(
+                      visible: loginAt != "",
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: GestureDetector(
+                            onTap: () {
 
-                  const SizedBox(
-                    height: 12,
-                  ),
+                            },
+                            child: const Text(
+                              "* Your Account is currently Login in Another Device ",
+                              style: TextStyle(color: Colors.amber,fontFamily: "PoppinRegular"),
+                              textAlign: TextAlign.start,
+                            )),
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    InkWell(
+                      onTap: (){
+                        login();
+                      },
+                      child: Material(
+                        borderRadius: const BorderRadius.all(
+                            Radius.circular(8)),
+                        elevation: 6,
+                        color: Colors.yellow,
+                        child: Container(
+                          height: 40,
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          child: !_isLoading
+                              ? const Text(
+                            'Log in',
+                            style: TextStyle(color: Colors.black,
+                                fontSize: 17,fontFamily: "Poppins"),
+                          )
+                              :  Center(
+                              child: LoadingAnimationWidget.staggeredDotsWave(
+                                color: Colors.blue,
+                                size: 40,
+                              )),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+
+                    const SizedBox(
+                      height: 12,
+                    ),
 
 
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -95,13 +95,8 @@ class _quizScreenState extends State<quizScreen> {
     List<QuestionModel> tempList = [];
     tempList.addAll(questioList);
     for(int i = 0 ;i<questioList.length;i++){
-    print(selectedLanguge);
 
-    print( tempList[i].statement);
-    print( tempList[i].optionA);
-    print( tempList[i].option2);
-    print( tempList[i].optionC);
-    print( tempList[i].answer);
+
      await translator.translate(questioList[i].statement,from: 'en',to: selectedLanguge).then((value) {
         tempList[i].statement = value.text;
       });
@@ -119,6 +114,14 @@ class _quizScreenState extends State<quizScreen> {
          tempList[i].optionC = value.text;
        });
      }
+
+    if(tempList[i].optionD != "") {
+      await translator.translate(
+          questioList[i].optionD, from: 'en', to: selectedLanguge).then((
+          value) {
+        tempList[i].optionD = value.text;
+      });
+    }
      await translator.translate(questioList[i].answer,from: 'en',to: selectedLanguge).then((value) {
         tempList[i].answer = value.text;
       });
@@ -148,6 +151,7 @@ class _quizScreenState extends State<quizScreen> {
           optionA: element['optionA'],
           option2: element['option2'],
           optionC: element['optionC'],
+          optionD: element['optionD'],
           answer: element['answer']);
       allQuestionListinEnglish.add(questionModel);
 
@@ -307,12 +311,12 @@ class _quizScreenState extends State<quizScreen> {
                             child: Padding(padding: EdgeInsets.only(top: 20)
                               , child: InkWell(
                                 onTap: (){
+
                                   Navigator.of(context).push(new MaterialPageRoute<Null>(
                                       builder: (BuildContext context) {
-                                        return new previewImage(imageUrls: [questioList[question_no].image], index: 0, isFile: false,);
+                                        return new previewImage(imageUrls: [questioList[question_no].image], index: 0, isFile: false, question: questioList[question_no],);
                                       },
                                       fullscreenDialog: true));
-
                                 },
                                 child: Material(
                                   borderRadius: BorderRadius.circular(10),
@@ -369,8 +373,139 @@ class _quizScreenState extends State<quizScreen> {
                               Visibility(visible: questioList[question_no].optionC != "",
                                 child: optionItem("c",3, questioList[question_no].optionC,questioList[question_no]),
                               ),
+                              Visibility(visible: questioList[question_no].optionD != "",
+                                child: optionItem("d",4, questioList[question_no].optionD,questioList[question_no]),
+                              ),
+
+                              Visibility(
+                                  visible: error != "",
+                                  child:    Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text("    * ${error}",style: TextStyle(fontFamily: "Poppins",color: Colors.red,fontSize: 17,letterSpacing: 1),),
+                                    ],
+                                  )),
+
+                              SizedBox(height: 30,),
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+
+                                    InkWell(
+                                      onTap: () {
+                                        if (question_no != 1)
+                                        {
+                                          question_no = question_no - 1;
+                                          aswer = questioList[question_no].answer;
+                                          setState(() {});
+                                        }
+                                      },
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width*0.3,
+                                        child: Material(
+                                          borderRadius: BorderRadius.circular(5),
+                                          color: Colors.cyan[100] ,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.arrow_back,color: Colors.blueAccent,size: 20,),
+                                                Text("Previous",style: TextStyle(fontFamily: "Poppins",fontSize: 16),)
+                                              ],
+                                            ),
+                                          )
+                                          ,
+                                        ),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        if (question_no == (questioList.length-1)) {
+                                          if(selectedOptions.contains(0)){
+                                            for(int i= 0;i<selectedOptions.length;i++){
+                                              if(selectedOptions[i] == 0) {
+                                                error = "Tick Question no ${i+1}";
+                                                setState(() {
+
+                                                });
+                                              }
+                                            }
+                                          }
+                                          else{
+                                            _showFinishDialog();
+                                          }
+                                        }
+                                        else  {
+                                          question_no = question_no + 1;
+                                          aswer = questioList[question_no].answer;
+                                          setState(() {});
+                                        }
+                                      },
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width*0.27,
+
+                                        child: Material(
+                                          borderRadius: BorderRadius.circular(5),
+                                          color: Colors.cyan[100] ,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.arrow_forward,color: Colors.blueAccent,size: 25,),
+                                                Text("Next  ",style: TextStyle(fontFamily: "Poppins",fontSize: 16),)
+                                              ],
+                                            ),
+                                          )
+                                          ,
+                                        ),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: (){
+                                        if(selectedOptions.contains(0)){
+                                          for(int i= 0;i<selectedOptions.length;i++){
+                                            if(selectedOptions[i] == 0) {
+                                              error = "Tick Question no ${i+1}";
+                                              setState(() {
+
+                                              });
+                                              break;
+
+                                            }
+                                          }
+                                        }
+                                        else{
+                                          _showFinishDialog();
+                                        }
+                                      },
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width*0.27,
 
 
+                                        child: Material(
+                                          borderRadius: BorderRadius.circular(5),
+                                          color: Colors.amber ,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.pin_end_outlined,color: Colors.blueAccent,size: 25,),
+                                                Text("  Finish",style: TextStyle(fontFamily: "Poppins",fontSize: 15),)
+
+
+                                              ],
+                                            ),
+                                          )
+                                          ,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
 
@@ -378,382 +513,7 @@ class _quizScreenState extends State<quizScreen> {
                       ),
   ],
                   ),
-                  Column(
-                    children: [
-                      Visibility(
-                          visible: error != "",
-                          child:    Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text("    * ${error}",style: TextStyle(fontFamily: "Poppins",color: Colors.red,fontSize: 17,letterSpacing: 1),),
-                            ],
-                          )),
-                      Column(
-                        children: [
-                          SizedBox(height: 10,),
-                          Padding(padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
 
-                                InkWell(
-                                  onTap: () {
-                                    if (question_no != 1)
-                                    {
-                                      question_no = question_no - 1;
-                                      aswer = questioList[question_no].answer;
-                                      setState(() {});
-                                    }
-                                  },
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width*0.3,
-                                    child: Material(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: Colors.cyan[100] ,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.arrow_back,color: Colors.blueAccent,size: 20,),
-                                            Text("Previous",style: TextStyle(fontFamily: "Poppins",fontSize: 16),)
-                                          ],
-                                        ),
-                                      )
-                                      ,
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    if (question_no == (questioList.length-1)) {
-                                      if(selectedOptions.contains(0)){
-                                        for(int i= 0;i<selectedOptions.length;i++){
-                                          if(selectedOptions[i] == 0) {
-                                            error = "Tick Question no ${i+1}";
-                                            setState(() {
-
-                                            });
-                                          }
-                                        }
-                                      }
-                                      else{
-                                        _showFinishDialog();
-                                      }
-                                    }
-                                    else  {
-                                      question_no = question_no + 1;
-                                      aswer = questioList[question_no].answer;
-                                      setState(() {});
-                                    }
-                                  },
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width*0.27,
-
-                                    child: Material(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: Colors.cyan[100] ,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.arrow_forward,color: Colors.blueAccent,size: 25,),
-                                            Text("Next  ",style: TextStyle(fontFamily: "Poppins",fontSize: 16),)
-                                          ],
-                                        ),
-                                      )
-                                      ,
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: (){
-                                    if(selectedOptions.contains(0)){
-                                      for(int i= 0;i<selectedOptions.length;i++){
-                                        if(selectedOptions[i] == 0) {
-                                          error = "Tick Question no ${i+1}";
-                                          setState(() {
-
-                                          });
-                                          break;
-
-                                        }
-                                      }
-                                    }
-                                    else{
-                                      _showFinishDialog();
-                                    }
-                                  },
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width*0.27,
-
-
-                                    child: Material(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: Colors.amber ,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.pin_end_outlined,color: Colors.blueAccent,size: 25,),
-                                            Text("  Finish",style: TextStyle(fontFamily: "Poppins",fontSize: 15),)
-
-
-                                          ],
-                                        ),
-                                      )
-                                      ,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 10,),
-
-                          // Container(
-                          //   color: Colors.grey[100],
-                          //   child: AnimationLimiter(
-                          //     child: GridView.count(
-                          //       physics: const NeverScrollableScrollPhysics(),
-                          //       shrinkWrap: true,
-                          //       padding: const EdgeInsets.fromLTRB(6, 2, 6, 0),
-                          //       scrollDirection: Axis.vertical,
-                          //       crossAxisCount: 10,
-                          //       childAspectRatio: (1 / 0.9),
-                          //       crossAxisSpacing: 4,
-                          //       mainAxisSpacing: 8,
-                          //       children: List.generate(
-                          //         30,
-                          //             (int index) {
-                          //           return AnimationConfiguration.staggeredGrid(
-                          //             position: index,
-                          //             duration: const Duration(milliseconds: 375),
-                          //             columnCount: 3,
-                          //             child: ScaleAnimation(
-                          //               child: FadeInAnimation(
-                          //                   child: Material(
-                          //                     clipBehavior: Clip.antiAlias,
-                          //                     elevation: 1,
-                          //                     child: Container(
-                          //                       child: Center(child:
-                          //
-                          //                       Text(" ${index+1} ",style:
-                          //                       TextStyle(fontFamily: "Poppins",color: Colors.blue,fontSize: 16),)),
-                          //
-                          //                       color: 1 != 0 ? Colors.green[100]:index == question_no?  Colors.yellow:Colors.white,
-                          //                     ),
-                          //                   )
-                          //               ),
-                          //             ),
-                          //           );
-                          //         },
-                          //       ),
-                          //     ),),
-                          // ),
-
-
-                          // SizedBox(
-                          //   height: MediaQuery.of(context).size.height * 0.05,
-                          //   width: MediaQuery.of(context).size.width,
-                          //   child: Container(
-                          //       color: Colors.grey[300],
-                          //       child:     Center(
-                          //         child: ListView.builder(
-                          //
-                          //           shrinkWrap: true,
-                          //           scrollDirection: Axis.horizontal,
-                          //           padding: const EdgeInsets.all(0),
-                          //           itemBuilder: (context, index) {
-                          //             return Padding(
-                          //               padding: const EdgeInsets.all(5.0),
-                          //               child: Material(
-                          //                 clipBehavior: Clip.antiAlias,
-                          //                 elevation: 0,
-                          //                 child: Container(
-                          //                   padding: EdgeInsets.all(2),
-                          //                   child: Center(child:
-                          //                   index != 9?
-                          //                   Text(" 0${index+1} ",style:
-                          //                   TextStyle(fontFamily: "Poppins",color: Colors.blue),):
-                          //                   Text(" ${index+1} ",style:
-                          //                   TextStyle(fontFamily: "Poppins",color: Colors.blue),)),
-                          //
-                          //                   color: 1 != 0 ? Colors.green[100]:index == question_no?  Colors.yellow:Colors.white,
-                          //                 ),
-                          //               ),
-                          //             );
-                          //           },
-                          //           itemCount:10,
-                          //         ),
-                          //       )
-                          //   ),
-                          // ),
-                          // SizedBox(
-                          //   height: MediaQuery.of(context).size.height * 0.05,
-                          //   width: MediaQuery.of(context).size.width,
-                          //   child: Container(
-                          //       color: Colors.grey[300],
-                          //       child:     Center(
-                          //         child: ListView.builder(
-                          //
-                          //           shrinkWrap: true,
-                          //           scrollDirection: Axis.horizontal,
-                          //           padding: const EdgeInsets.all(0),
-                          //           itemBuilder: (context, index) {
-                          //             return Padding(
-                          //               padding: const EdgeInsets.all(5.0),
-                          //               child: Material(
-                          //                 clipBehavior: Clip.antiAlias,
-                          //                 elevation: 0,
-                          //                 child: Container(
-                          //                   padding: EdgeInsets.all(3),
-                          //                   child: Center(child: Text(" ${index+11} "
-                          //                     ,style: TextStyle(fontFamily: "Poppins"
-                          //                         ,color: Colors.blue),)),
-                          //                   color: Colors.white,
-                          //                 ),
-                          //               ),
-                          //             );
-                          //           },
-                          //           itemCount:10,
-                          //         ),
-                          //       )
-                          //   ),
-                          // ),
-                          // SizedBox(
-                          //   height: MediaQuery.of(context).size.height * 0.05,
-                          //   width: MediaQuery.of(context).size.width,
-                          //   child: Container(
-                          //       color: Colors.grey[300],
-                          //       child:     Center(
-                          //         child: ListView.builder(
-                          //
-                          //           shrinkWrap: true,
-                          //           scrollDirection: Axis.horizontal,
-                          //           padding: const EdgeInsets.all(0),
-                          //           itemBuilder: (context, index) {
-                          //             return Padding(
-                          //               padding: const EdgeInsets.all(5.0),
-                          //               child: Material(
-                          //                 clipBehavior: Clip.antiAlias,
-                          //                 elevation: 0,
-                          //                 child: Container(
-                          //                   padding: EdgeInsets.all(2),
-                          //                   child: Center(child: Text(" ${index+21} ",style:
-                          //                   TextStyle(fontFamily: "Poppins",color: Colors.blue),)),
-                          //                   color: Colors.white,
-                          //                 ),
-                          //               ),
-                          //             );
-                          //           },
-                          //           itemCount:10,
-                          //         ),
-                          //       )
-                          //   ),
-                          // ),
-                          // Container(
-                          //   height: 50,
-                          //   width: MediaQuery.of(context).size.width,
-                          //   color: Colors.grey[300],
-                          // ),
-                        ],
-                      ),
-
-                      SizedBox(height: 10),
-                      Container(
-                        height: 8,
-                        width: MediaQuery.of(context).size.width,
-                        color: Colors.grey[200],
-                      ),
-                      Container(
-                        color: Colors.grey[100],
-                        child: AnimationLimiter(
-                          child: GridView.count(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.fromLTRB(6, 2, 6, 0),
-                            scrollDirection: Axis.vertical,
-                            crossAxisCount: 10,
-                            childAspectRatio: (1 / 0.9),
-                            crossAxisSpacing: 4,
-                            mainAxisSpacing: 8,
-                            children: List.generate(
-                              questioList.length,
-                                  (int index) {
-                                return AnimationConfiguration.staggeredGrid(
-                                  position: index,
-                                  duration: const Duration(milliseconds: 375),
-                                  columnCount: 3,
-                                  child: ScaleAnimation(
-                                    child: FadeInAnimation(
-                                        child: InkWell(
-
-                                          onTap: (){
-                                            print(index);
-                                            question_no = index;
-                                            aswer = questioList[question_no].answer;
-                                            OptioSelected = selectedOptions[question_no];
-
-                                            setState(() {
-
-                                            });
-                                          },
-                                          child: selectedOptions[index]!=0?
-                                          Material(
-                                            clipBehavior: Clip.antiAlias,
-                                            elevation: 1,
-                                            child: Container(
-                                              child: Center(child:
-
-                                              Text(" ${index+1} ",style:
-                                              TextStyle(fontFamily: "Poppins",color: Colors.blue,fontSize: 16),)),
-
-                                              color: selectedOptions[index] !=0?   Colors.green[200]:Colors.orange,
-                                            ),
-                                          ):
-                                          index == question_no ?
-                                          Material(
-                                            clipBehavior: Clip.antiAlias,
-                                            elevation: 1,
-                                            child: Container(
-                                              child: Center(child:
-
-                                              Text(" ${index+1} ",style:
-                                              TextStyle(fontFamily: "Poppins",color: Colors.blue,fontSize: 16),)),
-
-                                              color: Colors.orange,
-                                            ),
-                                          ):
-                                          Material(
-                                            clipBehavior: Clip.antiAlias,
-                                            elevation: 1,
-                                            child: Container(
-                                              child: Center(child:
-
-                                              Text(" ${index+1} ",style:
-                                              TextStyle(fontFamily: "Poppins",color: Colors.blue,fontSize: 16),)),
-
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        )
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),),
-                      ),
-
-                      Container(
-                        height: 48,
-                        width: MediaQuery.of(context).size.width,
-                        color: Colors.grey[200],
-                      ),
-                    ],
-                  )
                 ],
               ),
             ):
@@ -777,8 +537,98 @@ class _quizScreenState extends State<quizScreen> {
             ),
         ),
       ),
+          bottomNavigationBar: BottomAppBar(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  color: Colors.grey[100],
+                  child: AnimationLimiter(
+                    child: GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.fromLTRB(6, 2, 6, 0),
+                      scrollDirection: Axis.vertical,
+                      crossAxisCount: 10,
+                      childAspectRatio: (1 / 0.9),
+                      crossAxisSpacing: 4,
+                      mainAxisSpacing: 8,
+                      children: List.generate(
+                        questioList.length,
+                            (int index) {
+                          return AnimationConfiguration.staggeredGrid(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            columnCount: 3,
+                            child: ScaleAnimation(
+                              child: FadeInAnimation(
+                                  child: InkWell(
 
-    ),
+                                    onTap: (){
+                                      print(index);
+                                      question_no = index;
+                                      aswer = questioList[question_no].answer;
+                                      OptioSelected = selectedOptions[question_no];
+
+                                      setState(() {
+
+                                      });
+                                    },
+                                    child: selectedOptions[index]!=0?
+                                    Material(
+                                      clipBehavior: Clip.antiAlias,
+                                      elevation: 1,
+                                      child: Container(
+                                        child: Center(child:
+
+                                        Text(" ${index+1} ",style:
+                                        TextStyle(fontFamily: "Poppins",color: Colors.blue,fontSize: 16),)),
+
+                                        color: selectedOptions[index] !=0?   Colors.green[200]:Colors.orange,
+                                      ),
+                                    ):
+                                    index == question_no ?
+                                    Material(
+                                      clipBehavior: Clip.antiAlias,
+                                      elevation: 1,
+                                      child: Container(
+                                        child: Center(child:
+
+                                        Text(" ${index+1} ",style:
+                                        TextStyle(fontFamily: "Poppins",color: Colors.blue,fontSize: 16),)),
+
+                                        color: Colors.orange,
+                                      ),
+                                    ):
+                                    Material(
+                                      clipBehavior: Clip.antiAlias,
+                                      elevation: 1,
+                                      child: Container(
+                                        child: Center(child:
+
+                                        Text(" ${index+1} ",style:
+                                        TextStyle(fontFamily: "Poppins",color: Colors.blue,fontSize: 16),)),
+
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),),
+                ),
+
+                Container(
+                  height: 18,
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.grey[200],
+                ),
+              ],
+            ),
+          ),),
         )
         : Scaffold(
       body: Container(
@@ -916,6 +766,7 @@ class _quizScreenState extends State<quizScreen> {
           optionA: element['optionA'],
           option2: element['option2'],
           optionC: element['optionC'],
+          optionD: element['optionD'],
           answer: element['answer']);
       questioList.add(questionModel);
 
@@ -927,21 +778,26 @@ class _quizScreenState extends State<quizScreen> {
     questioList.forEach((element) {
 
       selectedOptions.add(0);
+        print("Shuffle");
+        List<String> opti = [
+          element.optionA,
+          element.option2,
+          element.optionC
+        ];
 
-      // if(false) {
-      //
-      //   print("Shuffle");
-      //   List<String> opti = [
-      //     element.optionA,
-      //     element.option2,
-      //     element.optionC
-      //   ];
-      //   opti.shuffle();
-      //
-      //   element.optionA = opti[0];
-      //   element.option2 = opti[1];
-      //   element.optionC = opti[2];
-      // }
+      if(element.optionD != ""){
+        opti.add(element.optionD);
+      }
+        opti.shuffle();
+
+        element.optionA = opti[0];
+        element.option2 = opti[1];
+        element.optionC = opti[2];
+      if(element.optionD !="") {
+        element.optionD = opti[3];
+      }
+
+
       if(element.optionA == element.answer){
         correctOptions.add(1);
       }
@@ -950,6 +806,10 @@ class _quizScreenState extends State<quizScreen> {
       }
       else if(element.optionC == element.answer){
         correctOptions.add(3);
+      }
+
+      else if(element.optionD == element.answer){
+        correctOptions.add(4);
       }
 
     });

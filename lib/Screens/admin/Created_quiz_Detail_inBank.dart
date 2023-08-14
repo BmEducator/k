@@ -41,6 +41,7 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
   String _imageUrl = "";
   var imageFile;
   List<String> questionsWithImagePicked = [];
+  List<String> toDeleteImages = [];
 
 
   @override
@@ -55,7 +56,7 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
           optionA: element['optionA'],
           option2: element['option2'],
           optionC: element['optionC'],
-          answer: element['answer']);
+          answer: element['answer'], optionD: element['optionD']);
       questionsList.add(q);
     });
   }
@@ -297,21 +298,41 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
                                         ),
 
                                       )),
-                                  Container(
-                                      width: MediaQuery.of(context).size.width ,
-                                      padding: EdgeInsets.zero,
-                                      child:  ListTile(
-                                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                        dense: true,
-                                        visualDensity: VisualDensity(horizontal: 0,vertical: -4),
-                                        horizontalTitleGap: -15,
-                                        leading: Text("c) ",style: TextStyle(fontFamily: "Poppins",color: Colors.blue),),
-                                        title: Text(
-                                          questionsList[index].optionC,
-                                          style: TextStyle(fontFamily: "PoppinRegular"),
-                                        ),
+                                  Visibility(
+                                    visible:questionsList[index].optionC != "",
+                                    child: Container(
+                                        width: MediaQuery.of(context).size.width ,
+                                        padding: EdgeInsets.zero,
+                                        child:  ListTile(
+                                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                          dense: true,
+                                          visualDensity: VisualDensity(horizontal: 0,vertical: -4),
+                                          horizontalTitleGap: -15,
+                                          leading: Text("c) ",style: TextStyle(fontFamily: "Poppins",color: Colors.blue),),
+                                          title: Text(
+                                            questionsList[index].optionC,
+                                            style: TextStyle(fontFamily: "PoppinRegular"),
+                                          ),
 
-                                      )),
+                                        )),
+                                  ),
+                                Visibility(
+                                  visible:questionsList[index].optionD != "",
+                                  child:   Container(
+                                    width: MediaQuery.of(context).size.width ,
+                                    padding: EdgeInsets.zero,
+                                    child:  ListTile(
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                      dense: true,
+                                      visualDensity: VisualDensity(horizontal: 0,vertical: -4),
+                                      horizontalTitleGap: -15,
+                                      leading: Text("d) ",style: TextStyle(fontFamily: "Poppins",color: Colors.blue),),
+                                      title: Text(
+                                        questionsList[index].optionD,
+                                        style: TextStyle(fontFamily: "PoppinRegular"),
+                                      ),
+
+                                    )),)
 
                                 ],
                               ),
@@ -382,27 +403,29 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
                             setState(() {
 
                             });
-                            List<QuestionModel> tempList = [];
 
+                            await deleteImages();
+
+                            List<QuestionModel> tempList = [];
                             if(questionsWithImagePicked.isNotEmpty){
                               for(int i= 0;i<questionsList.length;i++){
                                 if(questionsWithImagePicked.contains(questionsList[i].statement) ){
-
                                   if(questionsList[i].image !=""){
                                     print(questionsList[i].statement);
                                     String url = await uploadImage(questionsList[i].image);
-                                    tempList.add(QuestionModel(image: url, statement: questionsList[i].statement,
+                                    tempList.add(
+                                        QuestionModel(image: url,
+                                            statement: questionsList[i].statement,
 
                                         optionA: questionsList[i].optionA, option2: questionsList[i].option2,
-                                        optionC: questionsList[i].optionC, answer: questionsList[i].answer));
-
-                                  }
+                                        optionC: questionsList[i].optionC, answer: questionsList[i].answer, optionD: questionsList[i].optionD));
+                                   }
                                   else {
                                     String url = "";
                                     tempList.add(QuestionModel(image: url, statement: questionsList[i].statement,
 
                                         optionA: questionsList[i].optionA, option2: questionsList[i].option2,
-                                        optionC: questionsList[i].optionC, answer: questionsList[i].answer));
+                                        optionC: questionsList[i].optionC, answer: questionsList[i].answer, optionD: questionsList[i].optionD));
 
                                   }
                                 }
@@ -416,7 +439,7 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
                                     mode: mode, timestamp: widget.quiz.timestamp,
                                   );
                                   await FirebaseFirestore.instance.collection("admin").
-                                  doc("data").collection("QuestionBank")
+                                  doc("data").collection("QuizBank")
                                       .doc("Families").collection(widget.familyname)
                                       .doc(widget.quiz.timestamp).set(q.toMap());
 
@@ -441,7 +464,7 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
                                 mode: mode, timestamp: widget.quiz.timestamp,
                               );
                               await FirebaseFirestore.instance.collection("admin").
-                              doc("data").collection("QuestionBank")
+                              doc("data").collection("QuizBank")
                                   .doc("Families").collection(widget.familyname)
                                   .doc(widget.quiz.timestamp).set(q.toMap());
 
@@ -512,12 +535,14 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
     final TextEditingController _opt1Controller = TextEditingController();
     final TextEditingController _opt2Controller = TextEditingController();
     final TextEditingController _opt3Controller = TextEditingController();
+    final TextEditingController _opt4Controller = TextEditingController();
 
     String answer = "";
     _questioController.text = question.statement;
     _opt1Controller.text = question.optionA;
     _opt2Controller.text = question.option2;
     _opt3Controller.text = question.optionC;
+    _opt4Controller.text = question.optionD;
     _imageUrl = question.image;
     answer = question.answer;
 
@@ -740,7 +765,7 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
                           title:  TextField(
                             controller: _opt2Controller,
                             decoration: InputDecoration(
-                              labelText: "Option 2",
+                              labelText: "Option B",
                             ),
                           ),
                           trailing: answer == _opt2Controller.text?
@@ -805,6 +830,46 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
                         height: 24,
                       ),
 
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.red[100]),
+                        child: ListTile(
+                          dense: true,
+                          contentPadding:
+                          const EdgeInsets.only(left: 15, right: 10),
+                          horizontalTitleGap: 0,
+                          visualDensity: const VisualDensity(
+                              horizontal: 0, vertical: -4),
+                          title:  TextField(
+                            controller: _opt4Controller,
+                            decoration: InputDecoration(
+                              labelText: "Option D",
+                            ),
+                          ),
+                          trailing: answer == _opt4Controller.text?
+                          CircleAvatar(
+                            foregroundImage: AssetImage("assets/tick.jpg"),
+                            radius: 15,
+                          )
+                              :InkWell(
+                            onTap: (){
+                              innerSetState(() {
+                                answer  = _opt4Controller.text;
+                              });
+                            },
+                            child: CircleAvatar(
+                              foregroundImage: AssetImage("assets/cross.jpg"),
+                              radius: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+
 
 
 
@@ -833,7 +898,7 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
                               optionA: _opt1Controller.text,
                               option2: _opt2Controller.text,
                               optionC: _opt3Controller.text,
-                              answer: answer);
+                              answer: answer, optionD: _opt4Controller.text);
                           questionsList[index] = q;
                           Navigator.pop(context);
                           update();
@@ -884,6 +949,14 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
                       child: const Text(
                           "No", style: TextStyle(fontFamily: "Poppins")),),
                     TextButton(onPressed: () {
+
+                     if (questionsList[index].image != ""){
+                      if( !questionsWithImagePicked.contains(questionsList[index].statement)){
+                        toDeleteImages.add(questionsList[index].image);
+                      }
+
+                     }
+
                       questionsList.removeWhere((element) => element.statement == q.statement);
                       questionsWithImagePicked.removeWhere((element) => element == q.statement);
                       setState(() {
@@ -1147,7 +1220,7 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
                                 optionA: _opt1Controller.text,
                                 option2: _opt2Controller.text,
                                 optionC: _opt3Controller.text,
-                                answer: a[answer - 1]);
+                                answer: a[answer - 1], optionD: _opt4Controller.text);
 
                             questionsList.add(q);
                               questionsWithImagePicked.add(
@@ -1191,7 +1264,7 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
 
     final Reference storageReference = firebase_storage.FirebaseStorage.instance
         .ref()
-        .child('profileImage/(${path}.path)');
+        .child('Quizes/QuizNo ${widget.quizno}/pictures ( ${DateTime.now().millisecondsSinceEpoch}.path)');
 
     String downloadURL;
     final uploadTask = storageReference.putFile(File(path));
@@ -1306,4 +1379,11 @@ class _quizDetailInBankState extends State<quizDetailInBank> {
           });
   }
 
+  Future<void> deleteImages() async {
+    print(toDeleteImages.length);
+    toDeleteImages.forEach((element) {
+      print(element);
+      FirebaseStorage.instance.refFromURL(element).delete();
+    });
+  }
 }

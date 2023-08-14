@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:bmeducators/Screens/admin/myTiktoks.dart';
+import 'package:bmeducators/Screens/homeScreen.dart';
+import 'package:bmeducators/mainScreen.dart';
+import 'package:bmeducators/services_Screen/mobileWebOptionScreen.dart';
 import 'package:bmeducators/services_Screen/notificationDetailScreen.dart';
 import 'package:bmeducators/students/login_Screen.dart';
 import 'package:bmeducators/students/main_menuScreen.dart';
@@ -15,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'Screens/whiteboard/Drawing_page1.dart';
+
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -25,7 +30,7 @@ GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 late AndroidNotificationChannel channel;
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 bool isNotification= false;
-late final FirebaseMessaging _messaging;
+// late final FirebaseMessaging _messaging;
 String message = "";
 String name = "";
 
@@ -33,7 +38,16 @@ String name = "";
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+      // options: FirebaseOptions(
+      // apiKey: "AIzaSyCZqKqpjp1fbCCra8dO5BzYKS4ROW4JLq8",
+      // authDomain: 'bmeducator-61e1e.firebaseapp.com',
+      // databaseURL: 'https://bmeducator-61e1e-default-rtdb.firebaseio.com', // IMPORTANT!
+      // storageBucket: 'bmeducator-61e1e.appspot.c',
+      // appId:  "1:470670777580:web:036dd3f9a5127601c259c9",
+      // messagingSenderId: "470670777580",
+      // projectId: "bmeducator-61e1e")
+  );
 
   listenFCM();
   FirebaseMessaging.onBackgroundMessage((_firebaseMessagingBackgroundHandler));
@@ -53,8 +67,8 @@ Future<void> main() async {
      print("gorReviewed");
   }
 
-  FirebaseDatabase.instance.setPersistenceEnabled(true);
-  FirebaseDatabase.instance.ref().keepSynced(true);
+  // FirebaseDatabase.instance.setPersistenceEnabled(true);
+  // FirebaseDatabase.instance.ref().keepSynced(true);
 
 
   runApp( MyApp());
@@ -135,7 +149,7 @@ void requestPermission() async {
   );
 
   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    String? token = await _messaging.getToken();
+    // String? token = await _messaging.getToken();
   } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
   } else {
   }
@@ -184,7 +198,7 @@ void listenFCM() async {
     print( message.data['body']);
     print( message.data['screen']);
 
-    if(message.data['screen'] == "promotion"){
+    if(message.data['screen']  == "promotion"){
       navigatorKey.currentState?.push( MaterialPageRoute(builder: (context) => notificationDetailScreen(message: message.data['body'], name: message.data['name'],)));
 
 
@@ -256,6 +270,8 @@ class MyApp extends StatelessWidget {
               return  isNotification?
               notificationDetailScreen(message: message, name: "zppb"):
               SplashScreen(type: "home");
+              // MediaQuery.of(context).size.width < 750 ? mobileWebOptionScreen():
+              // homeScreen_web();
             } else if (snapshot.hasError) {
               return Center(
                 child: Text('${snapshot.error}'),
@@ -264,12 +280,15 @@ class MyApp extends StatelessWidget {
           }
 
           // means connection to future hasnt been made yet
+
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
-
+          // return SplashScreen(type: "login");
+          // return MediaQuery.of(context).size.width < 750 ? mobileWebOptionScreen()
+          // :homeScreen_web();
           return SplashScreen(type: "login");
         },
       ),

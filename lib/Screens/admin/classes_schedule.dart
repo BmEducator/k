@@ -46,8 +46,8 @@ class _classes_ScheduleState extends State<classes_Schedule> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
               child: Text( "No",
                   style: const TextStyle(fontFamily: "Poppins")),
@@ -886,8 +886,7 @@ class _classes_ScheduleState extends State<classes_Schedule> {
         "centerSpanish":center_spanish,
       }
     );
-    Navigator.pushReplacement(
-        context,
+    Navigator.of(context).pushReplacement(
         MaterialPageRoute(
             builder: (context) => adminScreen()));
 

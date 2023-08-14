@@ -11,6 +11,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 
 
+import '../../Models/QuestionModel.dart';
 import '../../Models/QuizModel.dart';
 import '../../Models/question.dart';
 
@@ -43,7 +44,7 @@ class _quizNoScreenState extends State<quizNoScreen> {
 
   Future<bool> willpop() async {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => questionPankCategories()));
+        context, MaterialPageRoute(builder: (context) => questionPankCategories(type: 'quiz',)));
     return  true;
 
   }
@@ -79,7 +80,7 @@ class _quizNoScreenState extends State<quizNoScreen> {
                           InkWell(
                               onTap:(){
                                 Navigator.pushReplacement(
-                                    context, MaterialPageRoute(builder: (context) => questionPankCategories()));
+                                    context, MaterialPageRoute(builder: (context) => questionPankCategories(type: 'quiz',)));
 
                               },
                               child: Icon(Icons.arrow_back_ios)),
@@ -359,7 +360,36 @@ class _quizNoScreenState extends State<quizNoScreen> {
             elevation: 10,
             clipBehavior: Clip.antiAlias,
             child: InkWell(
-              onTap: (){
+              onTap: () async {
+              // quizesList.forEach((e) async {
+              //   List<Question_Model> l = [];
+              //   e.questions.forEach((element) {
+              //     print(e.questions.length);
+              //     l.add(Question_Model(
+              //         image: element['image'],
+              //         statement: element['statement'],
+              //         optionA: element['optionA'],
+              //         option2: element['option2'],
+              //         optionC: element['optionC'],
+              //         answer: element['answer'], optionD: ""));
+              //   });
+              //   quizModelForBank q  = quizModelForBank(
+              //     id: e.id,
+              //     questions: l,
+              //     mode: e.mode, timestamp: e.timestamp,
+              //   );
+              //   await FirebaseFirestore.instance.collection("admin").
+              //   doc("data").collection("QuizBank")
+              //       .doc("Families").collection(widget.familyName)
+              //       .doc(e.timestamp).set(q.toMap());
+              //
+              // });
+              //
+              // setState(() {
+              //
+              // });
+              // _showFinishDialog();
+
                 Navigator.of(context).push(
                     MaterialPageRoute(
                         builder: (context) =>
@@ -418,10 +448,9 @@ class _quizNoScreenState extends State<quizNoScreen> {
   Future<void> getQuizes() async {
 
     await FirebaseFirestore.instance.collection("admin").
-    doc("data").collection("QuestionBank")
+    doc("data").collection("QuizBank")
         .doc("Families").collection(widget.familyName).get(GetOptions(source: Source.server)).then((value) => {
       value.docs.forEach((element) async {
-        print(element['id']);
     quizModelForBank q = quizModelForBank(
     id: element['id'],
     questions: element['questions'],
@@ -437,7 +466,7 @@ class _quizNoScreenState extends State<quizNoScreen> {
           optionA: element['optionA'],
           option2: element['option2'],
           optionC: element['optionC'],
-          answer: element['answer']);
+          answer: element['answer'], optionD: element['optionD']);
       questionList.add(qw);
 
     });
@@ -487,7 +516,7 @@ class _quizNoScreenState extends State<quizNoScreen> {
     "No", style: TextStyle(fontFamily: "Poppins")),),
     TextButton(onPressed: () async {
       await FirebaseFirestore.instance.collection("admin").
-      doc("data").collection("QuestionBank")
+      doc("data").collection("QuizBank")
           .doc("Families").collection(widget.familyName)
           .doc(quizesList[index].timestamp).delete();
 
@@ -534,5 +563,87 @@ class _quizNoScreenState extends State<quizNoScreen> {
 
   void update() {
     setState(() {});
+  }
+
+  Future<void> _showFinishDialog() {
+    return
+      showModalBottomSheet(
+          backgroundColor: Colors.transparent,
+          constraints: BoxConstraints(
+              maxWidth:
+              MediaQuery
+                  .of(context)
+                  .size
+                  .width -
+                  20),
+          isDismissible: false,
+          elevation: 20,
+          context: context,
+          builder: (context) {
+            return Container(
+              margin: EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                  BorderRadius.circular(20)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                    size: 60,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Your Quiz has been Created....",
+                    style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontSize: 18),
+                  ),
+
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 70),
+                    child: InkWell(
+                      onTap: () async {
+                        Navigator.pop(context);
+                  },
+
+                      child: Material(
+                        borderRadius:
+                        const BorderRadius.all(
+                            Radius.circular(8)),
+                        elevation: 6,
+                        color: Colors.yellow,
+                        child: Container(
+                            height: 40,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Continue',
+                              style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  color: Colors.black,
+                                  fontSize: 17),
+                            )),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                ],
+              ),
+            );
+          });
   }
 }

@@ -55,5 +55,34 @@
       });
     });
   </script>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyCZqKqpjp1fbCCra8dO5BzYKS4ROW4JLq8",
+    authDomain: "bmeducator-61e1e.firebaseapp.com",
+    databaseURL: "https://bmeducator-61e1e-default-rtdb.firebaseio.com",
+    projectId: "bmeducator-61e1e",
+    storageBucket: "bmeducator-61e1e.appspot.com",
+    messagingSenderId: "470670777580",
+    appId: "1:470670777580:web:036dd3f9a5127601c259c9",
+    measurementId: "G-6S5RQX3TVM"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+  <script type="text/javascript">
+    window.flutterWebRenderer = "html";
+</script>
+
+
 </body>
 </html>

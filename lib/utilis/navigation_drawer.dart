@@ -2,14 +2,20 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bmeducators/Screens/admin/adminprofile.dart';
+import 'package:bmeducators/Screens/admin/liveStream_home.dart';
 import 'package:bmeducators/Screens/admin/promo.dart';
 import 'package:bmeducators/Screens/homeScreen.dart';
+import 'package:bmeducators/services_Screen/LiveStreaming_homePage.dart';
 import 'package:bmeducators/services_Screen/aboutUs_Scree.dart';
 import 'package:bmeducators/students/myProfile.dart';
 import 'package:bmeducators/utilis/developerInfo.dart';
+import 'package:bmeducators/utilis/whiteBoard.dart';
+import 'package:bmeducators/utilis/zoomMeeting.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +23,13 @@ import 'package:translator/translator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Screens/admin/admin_Screen.dart';
+import '../Screens/admin/broadcastScreen.dart';
+import '../Screens/whiteboard/drawing_page.dart';
 import '../mainScreen.dart';
 import '../resources/authMethods.dart';
+import '../services_Screen/BroadcastPage.dart';
 import '../students/login_Screen.dart';
+import '../students/my_Statistics.dart';
 
 
 class NavigationDrawer extends StatefulWidget {
@@ -165,18 +175,18 @@ class _NavigationDrawerState extends State<NavigationDrawer>
                                             ),
                                           ),
                                         ),
-                                        subtitle: Container(
-                                          alignment: Alignment.centerLeft,
-                                          width: MediaQuery.of(context).size.width * 0.01,
-                                          height: MediaQuery.of(context).size.height * 0.03,
-                                          child: FittedBox(
-                                            child: Text(
-                                              email,
-                                              style:
-                                              TextStyle(color: Colors.grey[300]),
-                                            ),
-                                          ),
-                                        ),
+                                        // subtitle: Container(
+                                        //   alignment: Alignment.centerLeft,
+                                        //   width: MediaQuery.of(context).size.width * 0.01,
+                                        //   height: MediaQuery.of(context).size.height * 0.03,
+                                        //   child: FittedBox(
+                                        //     child: Text(
+                                        //       email,
+                                        //       style:
+                                        //       TextStyle(color: Colors.grey[300]),
+                                        //     ),
+                                        //   ),
+                                        // ),
                                         leading: CircleAvatar(
                                           radius: 40,
                                           backgroundImage: NetworkImage(profilLink),
@@ -208,7 +218,7 @@ class _NavigationDrawerState extends State<NavigationDrawer>
                                           ),
                                           leading: const Icon(
                                             color: Colors.white,
-                                            Icons.home_outlined,
+                                            PhosphorIcons.person,
                                           ),
                                           onTap: () => Navigator.of(context).push(
                                               MaterialPageRoute(
@@ -233,7 +243,7 @@ class _NavigationDrawerState extends State<NavigationDrawer>
                                           ),
                                           leading: const Icon(
                                             color: Colors.white,
-                                            Icons.home_outlined,
+                                              PhosphorIcons.person,
                                           ),
                                           onTap: () => Navigator.of(context).push(
                                               MaterialPageRoute(
@@ -263,6 +273,29 @@ class _NavigationDrawerState extends State<NavigationDrawer>
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     MainScreen()))),
+                                    ListTile(
+                                        title: Container(
+                                          alignment: Alignment.centerLeft,
+                                          height: MediaQuery.of(context).size.height *0.035,
+
+                                          child:  FittedBox(
+                                            child: Text(
+                                              'Errors',
+                                              style: TextStyle(
+                                                fontFamily: "PoppinRegular",
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        leading: const Icon(
+                                          color: Colors.white,
+                                          PhosphorIcons.bug,
+                                        ),
+                                        onTap: () =>   Navigator.of(context).push(
+        MaterialPageRoute(
+        builder: (context) =>
+        my_StatisticsScreen()))),
                                     ListTile(
                                         title:  Container(
                                           alignment: Alignment.centerLeft,
@@ -315,6 +348,7 @@ class _NavigationDrawerState extends State<NavigationDrawer>
                                                       builder: (context) =>
                                                           promoScreen()))),
                                     ),
+
                                     ListTile(
                                         title:  Container(
                                           alignment: Alignment.centerLeft,
@@ -407,17 +441,14 @@ class _NavigationDrawerState extends State<NavigationDrawer>
                             ),
                             InkWell(
                               onTap: (){
-                                // Navigator.of(context).push(
-                                //     MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             developersInformation()));
+
 
                               },
                               child: Column(
                                 children: [
                                   Text("Developed by",style: TextStyle(fontFamily: "PoppinRegular",color: Colors.grey,fontSize: 10),),
                                   SizedBox(height: 5,),
-                                  Text("W3Solutions",style: TextStyle(color: Colors.white,fontFamily: "PoppinRegular",fontSize: 16),)
+                                  Text("Web3Solutions",style: TextStyle(color: Colors.white,fontFamily: "PoppinRegular",fontSize: 11),)
                                  , SizedBox(height: 90,)
 
                                 ],
@@ -524,7 +555,7 @@ class _NavigationDrawerState extends State<NavigationDrawer>
     };
   }
 
-  Future<void>? _showDeleteDialog(BuildContext context) async {
+  Future<void>? ldf(BuildContext context) async {
     return (
         await showDialog(context: context,
             builder: (context)
@@ -540,6 +571,8 @@ class _NavigationDrawerState extends State<NavigationDrawer>
                           "No", style: TextStyle(fontFamily: "Poppins")),),
                     TextButton(onPressed: () async {
                       pref.clear();
+
+                      setState((){});
 
                       if(name == "admin"){
                         pref.setString("isAdmin", "false");
@@ -565,6 +598,82 @@ class _NavigationDrawerState extends State<NavigationDrawer>
 
 
   }
+
+  Future<void> _showDeleteDialog( context) {
+    bool isLoding = false;
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (thisLowerContext, innerSetState) {
+            return Dialog(
+              child: SingleChildScrollView(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height*0.15,
+                    child: isLoding?Center(
+                      child:  LoadingAnimationWidget.staggeredDotsWave(
+                          color: Colors.blue,
+                          size: 40,
+
+                    )) : Padding(
+                      padding:  EdgeInsets.all(15),
+                      child: Column(
+
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                        const Text("Do you want to Logout?",
+                        style: TextStyle(fontFamily: "PoppinRegular"),),
+
+                          SizedBox(height: 20,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+
+                              TextButton(onPressed: () {
+                                Navigator.pop(context);
+                              },
+                                child: const Text(
+                                    "No", style: TextStyle(fontFamily: "Poppins")),),
+                              TextButton(onPressed: () async {
+                                pref.clear();
+                                innerSetState((){
+                                  isLoding = true;
+                                });
+
+                                setState((){});
+
+                                if(name == "admin"){
+                                  pref.setString("isAdmin", "false");
+
+                                }else{
+                                  await FirebaseFirestore.instance.collection(
+                                      "admin").doc("data").collection("students").doc("login").collection("logins").doc(email).
+                                  update({"loginAt":""});
+                                }
+                                AuthMethods auth = AuthMethods();
+                                auth.signOut();
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => MainScreen()));
+
+                              },
+                                child: const Text("Yes", style: TextStyle(
+                                    color: Colors.grey, fontFamily: "Poppins")),)
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+              ),
+            );
+          });
+        });
+
+
+
+
+  }
+
 }
 
 
@@ -593,6 +702,8 @@ class CustomMClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
     return true;
   }
+
+
 
 
 

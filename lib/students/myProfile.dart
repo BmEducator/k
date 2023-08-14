@@ -17,11 +17,14 @@ class _myProfileState extends State<myProfile> {
   late studentModel student ;
 
   bool isLoading = true;
+  List<String> noOfActivations = [];
+
 
   @override
   void initState() {
     // TODO: implement initState
     getData();
+
     super.initState();
   }
 
@@ -88,14 +91,35 @@ class _myProfileState extends State<myProfile> {
                       )),),
                   SizedBox(height: 30,),
                   item("Name", student.name),
-                  item("Email", student.email),
                   item("Dni", student.dni),
-                  item("License-Type", student.licenseType),
+                  item("My Courses", student.licenseType),
                   item("Contact", student.contact),
                   item("Address", student.address),
                   item("Language", student.language),
                   item("Date of Birth", student.dateofBirth),
                   item("Access Limit", student.accessDate),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(20, 10, 0, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text("No of Activations       ", style: TextStyle(
+                            fontSize: 15, fontFamily: "Poppins"),),
+                        InkWell(
+                          onTap: (){
+                            _showNoOfActivationDialog(context);
+                          },
+                          child: Row(
+                            children: [
+                              Text(noOfActivations.length.toString(),style: TextStyle(fontFamily: "Poppins",fontSize: 18),),
+                              Icon(Icons.arrow_drop_down,size: 45,color: Colors.blue,)
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 40,)
 
 
                 ],
@@ -138,8 +162,11 @@ class _myProfileState extends State<myProfile> {
         accessDate: snapp['accessDate'],
         mode: snapp['mode'],
         revise: snapp['revise'],
-        licenseType: snapp['licenseType']);
+        licenseType: snapp['licenseType'], courses: snapp['courses'], noOfActivation: snapp['noOfActivation'], noOfActivations: snapp['noOfActivations']);
 
+
+    List<String>? noOf = ( student.noOfActivations as List )?.map((item) => item as String)?.toList();
+    noOfActivations = noOf!;
 
     setState(() {
       isLoading = false;
@@ -199,7 +226,23 @@ class _myProfileState extends State<myProfile> {
                 Divider(thickness: 2,)
               ],
             ),
-          ):
+          ):name == "My Courses"?
+         Container(
+           width: 140,
+           child: ListView.builder(
+
+             physics: NeverScrollableScrollPhysics(),
+           shrinkWrap: true,
+           itemBuilder: (context, index) {
+           return Chip(
+           backgroundColor: Colors.lightBlue[100],
+           label: Text(student.courses[index]+"   ",style: TextStyle(fontFamily: "PoppinRegular"),),
+
+           );
+           },
+           itemCount: student.courses.length,
+           ),
+         ):
          Container(
             width: MediaQuery.of(context).size.width * 0.5,
             child: Column(
@@ -210,9 +253,54 @@ class _myProfileState extends State<myProfile> {
               ],
             ),
           )
+
+
         ],
       ),
     );
 
   }
+  Future<void> _showNoOfActivationDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+
+        builder: (BuildContext context) {
+          return Dialog(
+              child:SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width *0.2,
+                  child: Column(
+                    children: [
+                      Text("  Date of Activation"),
+                      ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          DateFormat dateformat = DateFormat("yyyy-MM-dd");
+                          String s;
+                          s =  dateformat.format(DateTime.fromMillisecondsSinceEpoch(int.parse(noOfActivations[index])));
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 0),
+                            child: Chip(
+                              backgroundColor: Colors.lightBlue[100],
+                              label: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text("  "+(index+1).toString()+ "   "),
+                                  Text(s,style: TextStyle(fontFamily: "PoppinRegular"),),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount:noOfActivations.length,
+                      )
+                    ],
+                  ),
+                ),
+              ));
+        });
+  }
+
 }

@@ -389,7 +389,7 @@ class _promoScreenState extends State<promoScreen> {
                                           fontSize: 17, fontFamily: "Poppins"),
                                     ),
                                     subtitle: Text(
-                                      "Family:  " + studentsList[index].licenseType,
+                                      "Dni/Nei:   " + studentsList[index].dni,
                                       style: const TextStyle(fontSize: 15),
                                     ),
                                     horizontalTitleGap: 10,

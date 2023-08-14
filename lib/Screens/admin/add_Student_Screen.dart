@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bmeducators/Models/studentModel.dart';
 import 'package:bmeducators/Screens/admin/usersScreen.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -9,6 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class addStudentScreen extends StatefulWidget {
@@ -35,10 +37,14 @@ class _addStudentScreenState extends State<addStudentScreen> {
   bool isImagePicked = false;
   bool isDatePicked = false;
   bool isDateError = false;
+  bool isTaxiSelected = false;
+  bool isLoading = false;
+  List<String> courses = [];
   String _imageUrl = "https://i.pinimg.com/736x/da/4f/ad/da4fad3f0c9549a86a70dc90d9208e8d.jpg";
   String selectedLanguage = "English";
   late String dateOfbirth ;
-   String licenseType = "Permit A" ;
+   String licenseType = "Permiso AM" ;
+   String taxiType = "Bloque 1" ;
   List<String> languages = [
     'English',
     'Spanish',
@@ -58,6 +64,13 @@ class _addStudentScreenState extends State<addStudentScreen> {
     'CAP',
     'Curso de Taxi Barcelona',
   ];
+  List<String> taxiSubtypes = [
+    'Bloque 1',
+    'Bloque 2',
+    'Cap',
+    'Other',
+
+  ];
 
   late SharedPreferences pref;
   Future init() async{
@@ -74,7 +87,8 @@ class _addStudentScreenState extends State<addStudentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return !isLoading?
+    Scaffold(
         backgroundColor: Colors.grey[100],
         body: SingleChildScrollView(
             child: Column(
@@ -231,32 +245,124 @@ class _addStudentScreenState extends State<addStudentScreen> {
                           ],
                         ),
                         const SizedBox(
-                          height: 24,
+                          height: 14,
                         ),
+                        Visibility(
+                            visible: courses.length>0,
+                            child: Text("Selected Courses",style: TextStyle(fontSize: 15,fontFamily: "Poppins"),)),
+                        Visibility(
+                          visible: courses.length>0,
+                          child:ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return Chip(
+                                backgroundColor: Colors.lightBlue[100],
+                                label: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(courses[index]+"   ",style: TextStyle(fontFamily: "PoppinRegular"),),
+                                ],
+                              ),
+                                deleteIcon: Icon(Icons.close),
+                                deleteIconColor: Colors.red,
+                                onDeleted: (){
+                                  courses.removeWhere((element) => element == courses[index]);
+                                  setState(() {
+
+                                  });
+                                },
+                              );
+                            },
+                            itemCount: courses.length,
+                          ),
+                        ),
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text("License Type         ",style: TextStyle(fontFamily: "Poppins"),),
+                            Text("License Type    ",style: TextStyle(fontFamily: "Poppins"),),
 
-                            DropdownButton(
-                              value: licenseType,
-                              icon: Icon(Icons.arrow_drop_down),
-                              iconSize: 30,
-                              onChanged: (String? v){
-                                setState(() {
-                                  licenseType = v!;
-                                });
-                              },
-                              items: licenseTypes.map<DropdownMenuItem<String>>((String v){
-                                return DropdownMenuItem<String>(
-                                  value: v,
-                                  child: Text(v),
+                            Container(
+                              child: DropdownButton(
+                                value: licenseType,
+                                icon: Icon(Icons.arrow_drop_down),
+                                iconSize: 30,
+                                onChanged: (String? v){
+                                  setState(() {
+                                    licenseType = v!;
+                                    if(v != "Curso de Taxi Barcelona" && courses.contains("Curso de Taxi Barcelona")) {
+                                      isTaxiSelected = false;
 
-                                );
-                              }).toList(),
+                                    }
+                                    if(v == "Curso de Taxi Barcelona"){
+                                      isTaxiSelected = true;
+                                      setState(() {
+
+                                      });
+                                    }
+                                    else{
+                                    if(!courses.contains(v)){
+                                      courses.add(v);
+                                    }
+                                    }
+
+                                  });
+                                },
+                                items: licenseTypes.map<DropdownMenuItem<String>>((String v){
+                                  return DropdownMenuItem<String>(
+                                    value: v,
+                                    child: Container(
+                                      alignment: Alignment.topLeft,
+                                        width: MediaQuery.of(context).size.width *0.4,
+                                        height: 20,
+                                        child: FittedBox(child: Text(v,style: TextStyle(fontSize: 14,fontFamily: "Poppins",color: Colors.blue),))),
+
+                                  );
+                                }).toList(),
+                              ),
                             ),
 
                           ],
+                        ),
+                        Visibility(
+                          visible: isTaxiSelected,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text("Taxi SubType    ",style: TextStyle(fontFamily: "Poppins"),),
+
+                              Container(
+                                child: DropdownButton(
+                                  value: taxiType,
+                                  icon: Icon(Icons.arrow_drop_down),
+                                  iconSize: 30,
+                                  onChanged: (String? v){
+                                    setState(() {
+                                      taxiType = v!;
+                                      if(!courses.contains(v)){
+                                        courses.add(v);
+
+                                      }
+
+                                    });
+                                  },
+                                  items: taxiSubtypes.map<DropdownMenuItem<String>>((String v){
+                                    return DropdownMenuItem<String>(
+                                      value: v,
+                                      child: Container(
+                                        alignment: Alignment.topLeft,
+                                          width: MediaQuery.of(context).size.width *0.4,
+                                          height: 20,
+                                          child: FittedBox(child: Text(v,style: TextStyle(fontSize: 14,fontFamily: "Poppins",color: Colors.blue),))),
+
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+
+                            ],
+                          ),
                         ),
                         const SizedBox(
                           height: 24,
@@ -276,20 +382,20 @@ class _addStudentScreenState extends State<addStudentScreen> {
                               fontSize: 15,
                               color: Colors.blue),
                         ),
-                        const SizedBox(
-                          height: 24,
-                        ),
-
-                        TextField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            labelText: "Email",
-                          ),
-                        ),
+                        // const SizedBox(
+                        //   height: 24,
+                        // ),
+                        //
+                        // TextField(
+                        //   controller: _emailController,
+                        //   decoration: InputDecoration(
+                        //     filled: true,
+                        //     fillColor: Colors.white,
+                        //     border: OutlineInputBorder(
+                        //         borderRadius: BorderRadius.circular(20)),
+                        //     labelText: "Email",
+                        //   ),
+                        // ),
 
                         const SizedBox(
                           height: 24,
@@ -381,6 +487,9 @@ class _addStudentScreenState extends State<addStudentScreen> {
                               backgroundColor: Colors.blue[900]
                           ),
                           onPressed: () async {
+                            setState(() {
+
+                            });
                             if(!isDatePicked){
                                 isDateError = true;
                                 setState(() {
@@ -389,41 +498,65 @@ class _addStudentScreenState extends State<addStudentScreen> {
 
                             }
                             else{
+                              isLoading = true;
+
                               if(isImagePicked) {
                                 await uploadImage();
                               }
+                              DateTime now = DateTime.now().add(Duration(days: 30));
+
+
+
                               FirebaseFirestore.instance.collection("admin").doc(
                                   "data").collection("students")
                                   .doc("login").collection("logins").doc(
-                                  _emailController.text).
+                                  _dniController.text+"@gmail.com").
                               set({
                                 "name": _nameController.text,
-                                "email": _emailController.text,
+                                "email": _dniController.text+"@gmail.com",
                                 "password": _passwordController.text,
                                 'profileImage':_imageUrl,
                                 'loginAt':"",
                                 'dni':_dniController.text,
-                                'licenseType':licenseType
+                                'licenseType':licenseType,
+                                'courses':courses
                               });
 
                               DateFormat dateformat = DateFormat("yyyy-MM-dd");
+                              dateformat.format(now);
+                              List<String> li = [];
+                              li.add(DateTime.now().millisecondsSinceEpoch.toString());
+                              print(now);
                               studentModel newStudent = studentModel(
-                                  id: _emailController.text,
+                                  id: _dniController.text,
                                   name: _nameController.text,
                                   contact: _contactController.text,
                                   profileImage: _imageUrl,
                                   dateofBirth: dateOfbirth,
-                                  email: _emailController.text,
+                                  email: _dniController.text+"@gmail.com",
                                   dni: _dniController.text,
                                   address: _addressController.text,
                                   education: _educationController.text,
-                                  language: selectedLanguage, accessDate: '', translation: 'en', token: '', mode: 'Study', licenseType:licenseType, revise: 'true'  );
+                                  language: selectedLanguage,
+                                  accessDate: now.millisecondsSinceEpoch.toString(),
+                                  translation: 'false',
+                                  token: '',
+                                  mode: 'Both',
+                                  licenseType:licenseType,
+                                  revise: 'true',
+                                  courses: courses,
+                                  noOfActivation: 1, noOfActivations: li );
 
                              await FirebaseFirestore.instance.collection("admin").doc(
                                   "data").collection("students").doc(
                                   "allStudents").collection("allStudents")
-                                  .doc(_emailController.text).
+                                  .doc(_dniController.text+"@gmail.com").
                               set(newStudent.toMap());
+
+                              await FirebaseDatabase.instance.ref().child("students").child(_dniController.text).
+                              child("accessLimit").child("limit").set({
+                                "timestamp":now.millisecondsSinceEpoch ,
+                              });
 
                               // ScaffoldMessenger.of(context).showSnackBar(
                               //     SnackBar(content: Text("saved")));
@@ -448,6 +581,20 @@ class _addStudentScreenState extends State<addStudentScreen> {
             ),
           ),
         )
+    ):
+    Scaffold(
+        backgroundColor: Colors.grey[100],
+        body:
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Center(
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                    color: Colors.blue,
+                    size: 60,
+                  )),
+            ),
+
     );
   }
 

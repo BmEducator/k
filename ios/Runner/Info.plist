@@ -41,7 +41,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>As this App Contains Quizzes so it Needs to upload pictures of Questions</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>As this App Contains Quizzes so it Need to upload pictures of Questions</string>
+	<string>As this App Contains live Sessions so it Need to get microphone to get voice</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>As this App Contains Quizzes so it Need to upload pictures of Questions</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -67,6 +67,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

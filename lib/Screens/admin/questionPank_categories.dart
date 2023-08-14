@@ -3,6 +3,8 @@ import 'package:bmeducators/Screens/admin/questionBank.dart';
 import 'package:bmeducators/Screens/admin/searchScreen.dart';
 import 'package:bmeducators/Screens/admin/searchedQuestion.dart';
 import 'package:bmeducators/Screens/admin/quiz_numbers_screen.dart';
+import 'package:bmeducators/Screens/admin/taxi_subcategories.dart';
+import 'package:bmeducators/Screens/admin/videoScreenAdmin.dart';
 import 'package:bmeducators/Screens/homeScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +16,8 @@ import '../../Models/question.dart';
 import 'createQuiz.dart';
 
 class questionPankCategories extends StatefulWidget {
-  const questionPankCategories({Key? key}) : super(key: key);
+  String type;
+   questionPankCategories({Key? key,required this.type}) : super(key: key);
 
   @override
   State<questionPankCategories> createState() => _questionPankCategoriesState();
@@ -69,6 +72,7 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
       onWillPop: willpop,
       child:Scaffold(
           body: SingleChildScrollView(
+            physics:ClampingScrollPhysics(),
         child: SafeArea(
           child: Column(
             children: [
@@ -195,9 +199,26 @@ class _questionPankCategoriesState extends State<questionPankCategories> {
         highlightColor: Colors.transparent,
         splashColor: Colors.grey,
         onTap: () {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => quizNoScreen(familyName: name)));
-        },
+          if(char == "CTB"){
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(
+                builder: (context) => taxi_subcategories(type: widget.type,)));
+          }
+          else{
+            if(widget.type == "video"){
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          adminVideoScreen(family: name,)));
+            }
+            else{
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(
+                builder: (context) => quizNoScreen(familyName: name)));
+          }}
+
+
+          },
         child: Container(
           width: MediaQuery.of(context).size.width * 0.32,
           height: MediaQuery.of(context).size.height * 0.15,

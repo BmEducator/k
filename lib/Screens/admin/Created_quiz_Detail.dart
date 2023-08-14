@@ -41,7 +41,7 @@ class _created_quiz_detailState extends State<created_quiz_detail> {
           optionA: element['optionA'],
           option2: element['option2'],
           optionC: element['optionC'],
-          answer: element['answer']);
+          answer: element['answer'], optionD: element['optionD']);
       questionsList.add(q);
     });
 
@@ -56,7 +56,7 @@ class _created_quiz_detailState extends State<created_quiz_detail> {
           dni: element['dni'],
           address: element['address'],
           education: element['education'],
-          language: element['language'], accessDate: element['accessDate'], translation: element['translation'], token: element['token'], mode:element['mode'], licenseType:element['licenseType'], revise: element['revise']);
+          language: element['language'], accessDate: element['accessDate'], translation: element['translation'], token: element['token'], mode:element['mode'], licenseType:element['licenseType'], revise: element['revise'], courses: element['courses'], noOfActivation: element['noOfActivation'], noOfActivations: element["noOfActivations"]);
       selectedStudentsList.add(st);
 
       DateFormat format = DateFormat("dd-MM-yy");
@@ -190,6 +190,7 @@ class _created_quiz_detailState extends State<created_quiz_detail> {
                               ),
                               Text(" 2)  ${questionsList[index].option2}", style: TextStyle(fontFamily: "PoppinRegular",color: questionsList[index].answer == questionsList[index].option2?Colors.orange:Colors.black),),
                               Text(" 3)  ${questionsList[index].optionC}", style: TextStyle(fontFamily: "PoppinRegular",color: questionsList[index].answer == questionsList[index].optionC?Colors.orange:Colors.black),),
+                              Text(" 4)  ${questionsList[index].optionD}", style: TextStyle(fontFamily: "PoppinRegular",color: questionsList[index].answer == questionsList[index].optionC?Colors.orange:Colors.black),),
                               Divider(
                                 thickness: 4,
                               )

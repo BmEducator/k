@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bmeducators/Models/notificationModel.dart';
 import 'package:bmeducators/Screens/homeScreen.dart';
 import 'package:bmeducators/mainScreen.dart';
+import 'package:bmeducators/students/multipleCourses.dart';
 import 'package:bmeducators/students/notifications_Screen.dart';
 import 'package:bmeducators/students/quiz_Mainmenu.dart';
 import 'package:bmeducators/students/schedule_classes.dart';
@@ -42,11 +43,12 @@ class _mainMenuState extends State<mainMenu> {
 
 
   String email = "";
-  String name = "";
+  String username = "";
   String fullUpdate = "1.0";
   String lite = "4.0";
   late SharedPreferences pref;
    List<notificationModel> notificationList  = [];
+   List<String> familyList  = [];
    bool hasNotifcation = false;
 
 
@@ -112,7 +114,7 @@ class _mainMenuState extends State<mainMenu> {
                                 });
                                 Navigator.push(
                                     context, MaterialPageRoute(builder: (context) =>
-                                  notificationsScreen(notificaitonslist: notificationList, name: name,),
+                                  notificationsScreen(notificaitonslist: notificationList, name: username,),
                                 fullscreenDialog: true));
 
                               },
@@ -233,16 +235,35 @@ class _mainMenuState extends State<mainMenu> {
 
             }
             else if(name =="Online Lectures"){
-              Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          Video_Lectures_students()));
+              if (familyList.length == 1) {
+                Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            Video_Lectures_students(family: familyList[0],)));
+              }
+              else {
+                Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            multipleCourses(isAdmin: username == "admin", type: 'video',)));
+              }
+
             }
-            else if(name == "Quizzes"){
-              Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          quizMainmenuScreen()));
+            else if(name == "Quizzes") {
+              print(familyList.length);
+              if (familyList.length == 1) {
+                Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            quizMainmenuScreen(myCourse: familyList[0],)));
+
+              }
+              else {
+                Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            multipleCourses(isAdmin: username == "admin", type: 'quiz',)));
+              }
             }
             else {
               Navigator.of(context).push(
@@ -385,27 +406,37 @@ class _mainMenuState extends State<mainMenu> {
 
   Future init() async {
     pref = await SharedPreferences.getInstance();
+
     setState(() {
       email = pref.getString("email")!;
-      name = pref.getString("name")!;
+      username = pref.getString("name")!;
       isLoading = false;
+
     });
+    if(username == "admin"){
+   familyList = [   'Permiso AM',
+    'Permiso A1-A2',
+    'Permiso B',
+    'Permiso C',
+    'Permiso D',
+    'Permiso C+E',
+    'CAP',
+    'Curso de Taxi Barcelona',];
+
+    }
+    else{
+      familyList = pref.getStringList("myCourses")!;
+
+    }
 
     String first = "";
+
     String second = "";
     if(widget.checkUpdate){
       DatabaseReference ref = FirebaseDatabase.instance.ref().child("admin").child("appVersions");
-
       DatabaseEvent event = await ref.once();
-
-      print(event.snapshot.value);
-      print(event.snapshot.children.first.value);
-      print(event.snapshot.children.last.value);
-
       String fl = event.snapshot.children.first.value.toString();
       String lit = event.snapshot.children.last.value.toString();
-
-
 
       if(fullUpdate != fl){
         print("full");
@@ -426,8 +457,10 @@ class _mainMenuState extends State<mainMenu> {
       }
     }
     else{
-    getNotifications();
+      getNotifications();
+
     }
+
 
 
   }
@@ -435,19 +468,25 @@ class _mainMenuState extends State<mainMenu> {
   getNotifications() async {
     print("getting Notifications");
     List<notificationModel> nlist = [];
+    print(email);
+    print(email.substring(0,email.indexOf("@")));
     await FirebaseDatabase.instance.ref().child("students").child(email.substring(0,email.indexOf("@"))).child("studentsNotifications")
-    .orderByChild("timestamp").get().then((DataSnapshot snapshot) {
+    .get().then((DataSnapshot snapshot) {
 
 
      snapshot.children.forEach((element) {
 
       print(element.child("time").value);
-       notificationModel n = notificationModel(message: element.child("Message").value.toString(), status: element.child("status").value.toString(), timestamp: element.child("time").value.toString());
-
+       notificationModel n =
+       notificationModel(
+           message: element.child("Message").value.toString(),
+           status: element.child("status").value.toString(),
+           timestamp: int.parse(element.child("time").value.toString()));
        notificationList.add(n);
 
 
      });
+     notificationList.sort((a, b) => a.timestamp.compareTo(b.timestamp));
      notificationList.reversed;
 
      notificationList.forEach((element) {
@@ -494,7 +533,7 @@ class _mainMenuState extends State<mainMenu> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Dear ${name}!",style: TextStyle(fontFamily: "Poppins",fontSize: 18,color: Colors.blue),),
+                                Text("Dear ${username}!",style: TextStyle(fontFamily: "Poppins",fontSize: 18,color: Colors.blue),),
                                 SizedBox(height: 15,),
                                 Text(model.message,style: TextStyle(fontFamily: "PoppinRegular",fontSize: 15,),),
                                 SizedBox(height: 30,),
@@ -514,7 +553,7 @@ class _mainMenuState extends State<mainMenu> {
                           await FirebaseDatabase.instance.ref().child("students")
                               .child(email.substring(0,email.indexOf("@")))
                               .child("studentsNotifications")
-                              .child(model.timestamp).update({
+                              .child(model.timestamp.toString()).update({
                             "status":"read"
                           });
 

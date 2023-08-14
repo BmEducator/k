@@ -4,7 +4,7 @@ class notificationModel {
 
 
   late String message;
-  late String timestamp;
+  late int timestamp;
   late String status;
 
   notificationModel({

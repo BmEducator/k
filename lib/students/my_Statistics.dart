@@ -1,11 +1,17 @@
+import 'package:bmeducators/students/quiz_ExamMode_Screen.dart';
+import 'package:bmeducators/students/quiz_screen.dart';
+import 'package:bmeducators/students/reviseMode.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Models/QuizModel.dart';
 import 'package:intl/intl.dart';
 
+import '../Models/QuizToPerformModel.dart';
+import '../Models/notificationMode.dart';
 import '../Models/studentModel.dart';
 
 class my_StatisticsScreen extends StatefulWidget {
@@ -24,6 +30,7 @@ class _my_StatisticsScreenState extends State<my_StatisticsScreen> {
   late List<quizModel> quizesList = [];
   bool isLoading = true;
   bool hasData = false;
+  late List<quizToPerformModel> mistakesQuizesList = [];
 
   String email = "";
 
@@ -39,9 +46,7 @@ class _my_StatisticsScreenState extends State<my_StatisticsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-
-    getQuizesResults();
+    getResults();
   }
 
   @override
@@ -97,34 +102,50 @@ class _my_StatisticsScreenState extends State<my_StatisticsScreen> {
                     children: [
 
                       hasData
-
                           ?
-                      AnimationLimiter(
-                        child: ListView.builder(
+                      // AnimationLimiter(
+                      //   child: ListView.builder(
+                      //     shrinkWrap: true,
+                      //     reverse: true,
+                      //     physics: NeverScrollableScrollPhysics(),
+                      //     padding: const EdgeInsets.all(8.0),
+                      //     itemCount: quizesList.length,
+                      //     itemBuilder: (BuildContext context, int index) {
+                      //       return AnimationConfiguration.staggeredList(
+                      //         position: index,
+                      //         duration: const Duration(milliseconds: 175),
+                      //         child: SlideAnimation(
+                      //           horizontalOffset: 100,
+                      //
+                      //           child: FadeInAnimation(
+                      //               child: InkWell(
+                      //                 onTap: () async {
+                      //                   // Navigator.pushReplacement(
+                      //                   //     context, MaterialPageRoute(builder: (context) => ));
+                      //                 },
+                      //                 child: containerItem(index),
+                      //               )
+                      //           ),
+                      //         ),
+                      //       );
+                      //     },
+                      //   ),
+                      // )
+                      Container(
+                        child: GridView.count(
                           shrinkWrap: true,
-                          reverse: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.all(8.0),
-                          itemCount: quizesList.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return AnimationConfiguration.staggeredList(
-                              position: index,
-                              duration: const Duration(milliseconds: 175),
-                              child: SlideAnimation(
-                                horizontalOffset: 100,
-
-                                child: FadeInAnimation(
-                                    child: InkWell(
-                                      onTap: () async {
-                                        // Navigator.pushReplacement(
-                                        //     context, MaterialPageRoute(builder: (context) => ));
-                                      },
-                                      child: containerItem(index),
-                                    )
-                                ),
-                              ),
-                            );
-                          },
+                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                          scrollDirection: Axis.vertical,
+                          crossAxisCount: 3,
+                          childAspectRatio: (1 /1),
+                          crossAxisSpacing: 15,
+                          mainAxisSpacing: 20,
+                          children: List.generate(
+                            mistakesQuizesList.length,
+                                (int i) {
+                              return cotainerItem(i);
+                            },
+                          ),
                         ),
                       )
                           : Center(
@@ -275,9 +296,10 @@ class _my_StatisticsScreenState extends State<my_StatisticsScreen> {
                   Material(
                     elevation: 5,
                     borderRadius: BorderRadius.circular(5),
-                    color: quizesList[i].mistakes.length > 3
-                        ? Colors.red[500]
-                        : Colors.green[500],
+                    color: quizesList[i].mistakes.length > 3 ? Colors.red[500]
+                        : quizesList[i].mistakes.length == 0?
+                    Colors.green[500]:
+                        Colors.orangeAccent,
                     child: InkWell(
                       onTap: () {
                         _showMistakesDialog(context, i, quizesList[i]);
@@ -328,7 +350,7 @@ class _my_StatisticsScreenState extends State<my_StatisticsScreen> {
 
 
 
-  Future<void> getQuizesResults() async {
+  Future<void> getQizesResults() async {
 
     await init();
     print(email);
@@ -378,32 +400,81 @@ class _my_StatisticsScreenState extends State<my_StatisticsScreen> {
   }
 
 
-  Future<void> getQuizeResults() async {
+  Future<void> getResults() async {
 
     await init();
-    var data = await FirebaseFirestore.instance
-        .collection("students")
-        .doc(email)
-        .collection("quizes")
-        .get(const GetOptions(source: Source.server));
+    DocumentSnapshot snap = await FirebaseFirestore.instance.collection("students").
+    doc(email).collection("allMistakes").doc("mistakes").get();
+    if (snap.exists) {
+      List<dynamic> questions = snap['questions'];
+      print(questions.length);
+      List<QuestionModel> list = questions.cast<QuestionModel>();
+      print(list.length);
+      List<dynamic> questionforQuiz = [];
 
-    if (data.docs.isNotEmpty) {
-      print("exisr");
-      quizesList =
-          List.from(data.docs.map((doc) => quizModel.fromSnapshot(doc)));
+      int multiplesOf30 = (list.length / 30).ceil();
 
+      print("mutliples of 30 $multiplesOf30");
+
+      for(int i = 0 ; i < multiplesOf30; i++){
+        quizToPerformModel m  = quizToPerformModel(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            questions:[],
+            mode: 'Errors',
+            timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
+            status:'Pending');
+        mistakesQuizesList.add(m);
+      }
+
+      int no = 0;
+      for(int i = 1 ; i <= questions.length ; i++) {
+        print("i == $i");
+        print("no == $no");
+        mistakesQuizesList[no].questions.add(questions[i-1]);
+        if(i%30 == 0){
+          no++;
+        }
+      }
+    }
+
+    if (mistakesQuizesList.isNotEmpty) {
       setState(() {
         isLoading = false;
         hasData = true;
-        print(quizesList.length);
       });
     } else {
-      print("dsf");
       hasData = false;
       setState(() {
         isLoading = false;
       });
     }
+
+
+    // await init();
+    // var data = await FirebaseFirestore.instance
+    //     .collection("students")
+    //     .doc(email)
+    //     .collection("quizes")
+    //     .get(const GetOptions(source: Source.server));
+    //
+    // if (data.docs.isNotEmpty) {
+    //   print("exisr");
+    //   quizesList =
+    //       List.from(data.docs.map((doc) => quizModel.fromSnapshot(doc)));
+    //
+    //   setState(() {
+    //     isLoading = false;
+    //     hasData = true;
+    //     print(quizesList.length);
+    //   });
+    // } else {
+    //   print("dsf");
+    //   hasData = false;
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+    // }
+
   }
   Future<void> _showMistakesDialog(BuildContext context, int i, quizModel q) {
     return showDialog(
@@ -489,4 +560,152 @@ class _my_StatisticsScreenState extends State<my_StatisticsScreen> {
               ));
         });
   }
+
+  Widget cotainerItem(int i) {
+
+
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 5,right: 0,left: 0),
+        child: Material(
+          borderRadius: BorderRadius.circular(10),
+          elevation: 10,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () async {
+              _showModeDialog(context, mistakesQuizesList[i], "");
+
+            },
+            child: Container(
+                color: Colors.red[500],
+                // color:status == "   Done  "? Color(0xff00aeff).withOpacity(0.7) :Color(0xff00aeff).withOpacity(0.2),
+                padding: const EdgeInsets.symmetric(vertical:10, horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Quiz #",style: TextStyle(fontFamily:
+                        "PoppinRegular",fontSize: 14,
+                            color:Colors.white),),
+                        Text((mistakesQuizesList[i].questions.length).toString(),style: TextStyle(
+                            fontFamily: "Poppins",color:Colors.white,
+                            fontSize: 15),),
+
+                      ],
+                    ),
+
+
+
+
+                  ],
+                )
+            ),
+          ),
+        )
+    );
+  }
+  Future<void> _showModeDialog(BuildContext context,
+      quizToPerformModel quiz,String status) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            content: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.25,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+                    child: const Text(
+                      "Select Mode",
+                      style: TextStyle(fontFamily: "Poppins"),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushReplacement(new MaterialPageRoute(
+                                builder: (context) =>
+                                    reviseModeScreen(
+                                      quizToPerform: quiz, isLanguageTranslation: "false",)));
+
+                          },
+                          child: Card(
+                            elevation: 10,
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    PhosphorIcons.student,
+                                    size: 30,
+                                    color: Colors.purple,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text("Revise",
+                                      style: TextStyle( fontFamily: "Poppins"))
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            bool isContinue = false ;
+                            List<int> t  = [];
+
+                            Navigator.pushReplacement(
+                                context, MaterialPageRoute(builder: (context) =>
+                                quiz_ExamMode_Screen(quiz: quiz,
+                                  isLanguageTranslation: "false",
+                                  isShuffle: isContinue,
+                                  selecteddataList: t,
+                                  completedQuizes: [], mode:"Retry",) ));
+
+                          },
+                          child: Card(
+                            elevation: 10,
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    PhosphorIcons.exam,
+                                    color: Colors.green,
+                                    size: 30,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(" Retry ",
+                                      style: TextStyle(
+                                          fontFamily: "Poppins"))
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
 }

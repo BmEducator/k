@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:math' as math;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:intl/intl.dart';
 
 
 
@@ -41,6 +42,8 @@ class _createQuizInBankState extends State<createQuizInBank> {
 
   List<QuestionModel> questionsList = [];
   List<QuestionModel> tempList = [];
+  List<QuestionModel> toDeleteQuestionList = [];
+
 
 
 
@@ -235,11 +238,27 @@ class _createQuizInBankState extends State<createQuizInBank> {
                                         Text(questionsList[index].optionC),
                                       ],
                                     ),
+                                    SizedBox(height: 3,),
+                                    Visibility(
+                                      visible: questionsList[index].optionD != "",
+                                      child: Row(
+                                        children: [
+                                          Text("d)   ",style: TextStyle(fontFamily: "Poppins",color: Colors.blue),),
+
+                                          Text(questionsList[index].optionD),
+                                        ],
+                                      ),
+                                    ),
 
                                   ],
                                 ),
                                   InkWell(
                                     onTap: (){
+                                      print(tempList[index].image);
+                                      if(tempList[index].image != ""){
+                                      FirebaseStorage.instance.refFromURL(tempList[index].image).delete();
+                                      }
+                                      tempList.removeWhere((element) => element.statement == questionsList[index].statement);
                                       questionsList.removeWhere((element) => element.statement == questionsList[index].statement);
                                       setState(() {
 
@@ -305,48 +324,29 @@ class _createQuizInBankState extends State<createQuizInBank> {
                               setState(() {
 
                               });
-                              String timestamp = DateTime
-                                  .now()
-                                  .millisecondsSinceEpoch
-                                  .toString();
-
-                              for(int i= 0;i<questionsList.length;i++){
-                                  if(questionsList[i].image != ""){
-                                    print(questionsList[i].statement);
-                                    String url = await uploadImage(questionsList[i].image,timestamp);
-                                      tempList.add(QuestionModel(image: url, statement: questionsList[i].statement,
-
-                                        optionA: questionsList[i].optionA, option2: questionsList[i].option2,
-                                        optionC: questionsList[i].optionC, answer: questionsList[i].answer));
-                                  }
-                                  else{
-                                    tempList.add(questionsList[i]);
-                                  }
-                                  if(i == (questionsList.length-1)){
-
-                                    quizModelForBank q  = quizModelForBank(
-                                      id: timestamp,
-                                      questions: tempList,
-                                      mode: mode, timestamp: timestamp,
-                                    );
-                                    await FirebaseFirestore.instance.collection("admin").
-                                    doc("data").collection("QuestionBank")
-                                        .doc("Families").collection(widget.familyName)
-                                        .doc(timestamp).set(q.toMap());
-
-                                    isCreating = false;
-                                    setState(() {
-
-                                    });
-                                    _showFinishDialog();
+    String timestamp = DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString();
 
 
-                                  }
+    quizModelForBank q  = quizModelForBank(
+    id: timestamp,
+    questions: tempList,
+    mode: mode, timestamp: timestamp,
+    );
+    await FirebaseFirestore.instance.collection("admin").
+    doc("data").collection("QuizBank")
+        .doc("Families").collection(widget.familyName)
+        .doc(timestamp).set(q.toMap());
 
+    isCreating = false;
+    setState(() {
 
-                              }
-
-                              },
+    });
+    _showFinishDialog();
+                            }
+                            ,
                             child: const Text(
                               "Save",
                               style: TextStyle(
@@ -539,7 +539,7 @@ class _createQuizInBankState extends State<createQuizInBank> {
                           title: TextField(
                             controller: _opt2Controller,
                             decoration: InputDecoration(
-                              labelText: "Option 2",
+                              labelText: "Option B",
                             ),
                           ),
                           trailing: answer == 2
@@ -608,6 +608,48 @@ class _createQuizInBankState extends State<createQuizInBank> {
                         ),
                       ),
                       SizedBox(height: 15,),
+
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.red[100]),
+                        child: ListTile(
+                          dense: true,
+                          contentPadding:
+                          const EdgeInsets.only(left: 15, right: 10),
+                          horizontalTitleGap: 0,
+                          visualDensity:
+                          const VisualDensity(horizontal: 0, vertical: -4),
+                          title: TextField(
+                            controller: _opt4Controller,
+                            decoration: InputDecoration(
+                              labelText: "Option D",
+                            ),
+                          ),
+                          trailing: answer == 4
+                              ? CircleAvatar(
+                            foregroundImage:
+                            AssetImage("assets/tick.jpg"),
+                            radius: 15,
+                          )
+                              : InkWell(
+                            onTap: () {
+                              innerSetState(() {
+                                answerSelected = true;
+
+                                answer = 4;
+                              });
+                            },
+                            child: CircleAvatar(
+                              foregroundImage:
+                              AssetImage("assets/cross.jpg"),
+                              radius: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 15,),
                       Visibility(
                         visible: !answerSelected,
                         child: Row(
@@ -652,13 +694,12 @@ class _createQuizInBankState extends State<createQuizInBank> {
                               optionA: _opt1Controller.text,
                               option2: _opt2Controller.text,
                               optionC: _opt3Controller.text,
-                              answer: a[answer - 1]);
+                              answer: a[answer - 1], optionD: _opt4Controller.text);
 
                           questionsList.add(q);
                           innerSetState(() {});
                           Navigator.pop(context);
-                          update();
-
+                          update(q);
                         }},
                         child: Material(
                           borderRadius:
@@ -737,10 +778,35 @@ class _createQuizInBankState extends State<createQuizInBank> {
 
 
   Future<void> uploadImages()async {
+  }
+  Future<void> update(QuestionModel q) async {
+    setState(() {});
 
+    if(q.image ==""){
+      tempList.add(q);
+    }
+    else{
+      await updateImage(questionsList.last.image,q);
+    }
+    setState(() {});
 
   }
-  void update() {
+
+  Future<void> updateImage(String p, QuestionModel q) async {
+    print("hasimage");
+    print(p!="");
+    if(p!=""){
+      String url = await uploadImage(p,"QuizNo " +widget.QuizNo.toString());
+      QuestionModel temp = QuestionModel(
+          image: url,
+          statement: q.statement,
+          optionA:q.optionA,
+          option2: q.option2,
+          optionC: q.optionC,
+          answer: q.answer, optionD: q.optionD);
+      tempList.add(temp);
+      print("uploaded");
+    }
     setState(() {});
   }
 

@@ -4,6 +4,7 @@ import 'package:bmeducators/Screens/admin/student_statistics_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'dart:math' as math;
 
 import '../../Models/studentModel.dart';
@@ -46,7 +47,7 @@ class _usersSreenState extends State<usersSreen> {
       onWillPop: willpop,
       child: Scaffold(
         backgroundColor: Colors.white,
-          body:isEndLoading? SingleChildScrollView(
+          body:SingleChildScrollView(
             physics: ClampingScrollPhysics(),
             child: Column(
               children: [
@@ -54,7 +55,7 @@ class _usersSreenState extends State<usersSreen> {
                   children: [
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 50, 10, 0),
+                      padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -62,8 +63,7 @@ class _usersSreenState extends State<usersSreen> {
                             Navigator.pushReplacement(
                                 context, MaterialPageRoute(
                                 builder: (context) => adminScreen()));
-
-                          },
+                            },
                               icon: const Icon(
                                 Icons.arrow_back_ios, color: Colors.blue,size: 30,)),
 
@@ -149,7 +149,7 @@ class _usersSreenState extends State<usersSreen> {
                                           style: const TextStyle(
                                               fontFamily: "PoppinRegular"),
                                         ),
-                                        subtitle: Text(option.language),
+                                        subtitle: Text(option.dni),
                                         onTap: () {
                                           Navigator.pushReplacement(
                                               context, MaterialPageRoute(builder: (context) => student_statistics_screen(student: option)));
@@ -174,9 +174,14 @@ class _usersSreenState extends State<usersSreen> {
                             if (texteditingvalue.text.isEmpty) {
                               return const Iterable<studentModel>.empty();
                             } else {
-                              return studentsList.where((element) =>
+                              List<studentModel> l =[];
+                              l.addAll(studentsList.where((element) =>
                                   element.name.toLowerCase().contains(
-                                      texteditingvalue.text.toLowerCase())).toList();
+                                      texteditingvalue.text.toLowerCase())).toList());
+                              l.addAll(studentsList.where((element) =>
+                                  element.dni.toLowerCase().contains(
+                                      texteditingvalue.text.toLowerCase())).toList());
+                              return l;
                             }
                           },
                           fieldViewBuilder:
@@ -231,173 +236,149 @@ class _usersSreenState extends State<usersSreen> {
                   ],
                 ),
                 SizedBox(height: 10,),
-                Visibility(
-                  visible: studentsList.length > 0,
-                  child:SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.8,
-                    child: AnimationLimiter(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                        padding: const EdgeInsets.all(8.0),
-                        itemCount: studentsList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return AnimationConfiguration.staggeredList(
-                            position: index,
-                            duration: const Duration(milliseconds: 675),
-                            child: SlideAnimation(
-                              verticalOffset: 44.0,
-                              child: FadeInAnimation(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      Navigator.pushReplacement(
-                                          context, MaterialPageRoute(builder: (context) => student_statistics_screen(student: studentsList[index])));
+               isEndLoading? SizedBox(
+                 height: MediaQuery.of(context).size.height * 0.8,
+                 child: AnimationLimiter(
+                   child: ListView.builder(
+                     shrinkWrap: true,
+                     physics: ClampingScrollPhysics(),
+                     scrollDirection: Axis.vertical,
+                     padding: const EdgeInsets.all(8.0),
+                     itemCount: studentsList.length,
+                     itemBuilder: (BuildContext context, int index) {
+                       return AnimationConfiguration.staggeredList(
+                         position: index,
+                         duration: const Duration(milliseconds: 675),
+                         child: SlideAnimation(
+                           verticalOffset: 44.0,
+                           child: FadeInAnimation(
+                               child: InkWell(
+                                 onTap: () async {
+                                   Navigator.pushReplacement(
+                                       context, MaterialPageRoute(builder: (context) => student_statistics_screen(student: studentsList[index])));
+                                   },
+                                 child: Padding(
+                                   padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 14),
+                                   child: Material(
+                                     elevation: 7,
+                                     child: ListTile(
+                                       tileColor: Colors.grey[100],
+                                       shape: RoundedRectangleBorder(
+                                           borderRadius: BorderRadius.circular(10)),
+                                       leading: CircleAvatar(
+                                         backgroundImage: NetworkImage(studentsList[index].profileImage),
+                                         radius: 25,
+                                       ),
+                                       title: Text(
+                                         studentsList[index].name,
+                                         style: const TextStyle(fontSize: 17, fontFamily: "Poppins"),
+                                       ),
+                                       subtitle: Text(
+                                         "Nei/Dni:  "+  studentsList[index].dni,
+                                         style: const TextStyle(fontSize: 15),
+                                       ),
+                                       horizontalTitleGap: 10,
+                                       contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                                       trailing:  PopupMenuButton(
+                                           offset: const Offset(0, 40),
+                                           icon: const Icon(
+                                             Icons.more_vert,
+                                           ),
+                                           itemBuilder: (BuildContext context) => [
+                                             PopupMenuItem<String>(
+                                                 child: InkWell(
+                                                   onTap: (){
+                                                     Navigator.pushReplacement(
+                                                         context, MaterialPageRoute(
+                                                         builder: (context) =>
+                                                             studentSettings(student: studentsList[index],)));
 
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 14),
-                                      child: Material(
-                                        elevation: 7,
-                                        child: ListTile(
-                                          tileColor: Colors.grey[100],
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10)),
-                                          leading: CircleAvatar(
-                                            backgroundImage: NetworkImage(studentsList[index].profileImage),
-                                            radius: 25,
-                                          ),
-                                          title: Text(
-                                            studentsList[index].name,
-                                            style: const TextStyle(fontSize: 17, fontFamily: "Poppins"),
-                                          ),
-                                          subtitle: Text(
-                                            "Language:  "+  studentsList[index].language,
-                                            style: const TextStyle(fontSize: 15),
-                                          ),
-                                          horizontalTitleGap: 10,
-                                          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                                          trailing:  PopupMenuButton(
-                                              offset: const Offset(0, 40),
-                                              icon: const Icon(
-                                                Icons.more_vert,
-                                              ),
-                                              itemBuilder: (BuildContext context) => [
-                                                PopupMenuItem<String>(
-                                                    child: InkWell(
-                                                      onTap: (){
-                                                        Navigator.pushReplacement(
-                                                            context, MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                studentSettings(student: studentsList[index],)));
+                                                   },
+                                                   child: Row(
+                                                     children: [
+                                                       const Icon(
+                                                         Icons.edit,
+                                                         size: 20,
+                                                       ),
+                                                       const Text(
+                                                         " Edit",
+                                                         style:
+                                                         TextStyle(fontSize: 13),
+                                                       ),
+                                                     ],
+                                                   ),
+                                                 )),
+                                             PopupMenuItem<String>(
+                                                 child: InkWell(
+                                                   onTap: (){
 
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          const Icon(
-                                                            Icons.edit,
-                                                            size: 20,
-                                                          ),
-                                                          const Text(
-                                                            " Edit",
-                                                            style:
-                                                            TextStyle(fontSize: 13),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )),
-                                                PopupMenuItem<String>(
-                                                    child: InkWell(
-                                                      onTap: (){
+                                                     Navigator.push(
+                                                         context, MaterialPageRoute(
+                                                         builder: (context) =>
+                                                             student_statistics_screen(student: studentsList[index])));
 
-                                                        Navigator.push(
-                                                            context, MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                student_statistics_screen(student: studentsList[index])));
+                                                   },
+                                                   child: Row(
+                                                     children: [
+                                                       const Icon(
+                                                         Icons.show_chart,
+                                                         size: 20,
+                                                       ),
+                                                       const Text(
+                                                         " Statistics",
+                                                         style:
+                                                         TextStyle(fontSize: 13),
+                                                       ),
+                                                     ],
+                                                   ),
+                                                 )),
+                                             PopupMenuItem<String>(
+                                                 child: GestureDetector(
+                                                   onTap: () async {
+                                                     _showDeleteDialog(context, studentsList[index]);
+                                                   },
+                                                   child: Row(
+                                                     children: [
+                                                       const Icon(
+                                                         Icons.delete_outline,
+                                                         size: 20,
+                                                       ),
+                                                       const Text(
+                                                         " Remove",
+                                                         style:
+                                                         TextStyle(fontSize: 13),
+                                                       ),
+                                                     ],
+                                                   ),
+                                                 )),
 
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          const Icon(
-                                                            Icons.show_chart,
-                                                            size: 20,
-                                                          ),
-                                                          const Text(
-                                                            " Statistics",
-                                                            style:
-                                                            TextStyle(fontSize: 13),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )),
-                                                PopupMenuItem<String>(
-                                                    child: GestureDetector(
-                                                      onTap: () async {
-                                                        _showDeleteDialog(context, studentsList[index]);
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          const Icon(
-                                                            Icons.delete_outline,
-                                                            size: 20,
-                                                          ),
-                                                          const Text(
-                                                            " Remove",
-                                                            style:
-                                                            TextStyle(fontSize: 13),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )),
-
-                                              ]),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-
-
-                ),
+                                           ]),
+                                     ),
+                                   ),
+                                 ),
+                               )
+                           ),
+                         ),
+                       );
+                     },
+                   ),
+                 ),
+               ):
+               Container(
+                 height: MediaQuery.of(context).size.height*0.5,
+                 width: MediaQuery.of(context).size.width,
+                 child: Center(
+                     child: LoadingAnimationWidget.fourRotatingDots(
+                       color: Colors.blue,
+                       size: 45,
+                     )),
+               ),
                 SizedBox(height: 250,)
               ],
             )
-          ) :
-          Container(
-            margin: EdgeInsets.only(bottom: 100),
-            child: Center(
-              child: Center(
-                child: Stack(
-                  children: [
-                    Container(
-                        width: 70,
-                        height: 70,
-                        child: CircularProgressIndicator()),
-                    Container(
-                        width: 70,
-                        height: 70,
-                        child: Center(
-                          child: Transform(
-                            alignment: Alignment.center,
-                            transform: Matrix4.rotationY(math.pi),
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                        )),
-                  ],
-                ),
-              ),
-            ),
           )
+
+
       ),
     );
   }

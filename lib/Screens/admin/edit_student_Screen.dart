@@ -40,6 +40,8 @@ class _editStudentScreenState extends State<editStudentScreen> {
   String selectedLanguage = "English";
   late String dateOfbirth ;
   bool isSaving = false;
+  bool isTaxiSelected = false;
+
   List<String> languages = [
     'English',
     'Spanish',
@@ -60,7 +62,18 @@ class _editStudentScreenState extends State<editStudentScreen> {
   'Curso de Taxi Barcelona',
   ];
   late DateTime d;
+
+  List<String> courses = [];
   String licenseType = "Permiso B" ;
+  String taxiType = "Bloque 1" ;
+
+  List<String> taxiSubtypes = [
+    'Bloque 1',
+    'Bloque 2',
+    'Cap',
+    'Other',
+  ];
+  List<String> noOfActivationsList = [];
 
   @override
   void initState() {
@@ -86,6 +99,11 @@ class _editStudentScreenState extends State<editStudentScreen> {
         (int.parse(widget.student.dateofBirth)!));
 
     dateOfbirth = widget.student.dateofBirth;
+    List<String>? course = ( widget.student.courses as List )?.map((item) => item as String)?.toList();
+    courses = course!;
+
+    List<String>? noOfActivationList = ( widget.student.noOfActivations as List )?.map((item) => item as String)?.toList();
+    noOfActivationsList = noOfActivationsList!;
   }
 
   Future<void> getCredentials() async {
@@ -107,7 +125,7 @@ class _editStudentScreenState extends State<editStudentScreen> {
             child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 30, 10, 0),
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -170,6 +188,7 @@ class _editStudentScreenState extends State<editStudentScreen> {
                         ),
 
                         TextField(
+                          enabled: false,
                           controller: _dniController,
                           decoration: InputDecoration(
                             filled: true,
@@ -252,6 +271,37 @@ class _editStudentScreenState extends State<editStudentScreen> {
                         const SizedBox(
                           height: 24,
                         ),
+                        Visibility(
+                            visible: courses.length>0,
+                            child: Text("Selected Courses",style: TextStyle(fontSize: 15,fontFamily: "Poppins"),)),
+                        Visibility(
+                          visible: courses.length>0,
+                          child:ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return Chip(
+                                backgroundColor: Colors.lightBlue[100],
+                                label: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(courses[index]+"   ",style: TextStyle(fontFamily: "PoppinRegular"),),
+                                  ],
+                                ),
+                                deleteIcon: Icon(Icons.close),
+                                deleteIconColor: Colors.red,
+                                onDeleted: (){
+                                  courses.removeWhere((element) => element == courses[index]);
+                                  setState(() {
+
+                                  });
+                                },
+                              );
+                            },
+                            itemCount: courses.length,
+                          ),
+                        ),
+
                         Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,9 +315,25 @@ class _editStudentScreenState extends State<editStudentScreen> {
                               onChanged: (String? v){
                                 licenseTypes.removeWhere((i) => i == v);
                                 licenseTypes.insert(0, v!);
-                                setState(() {
-                                  licenseType = v!;
-                                });
+                                if(v != "Curso de Taxi Barcelona" && courses.contains("Curso de Taxi Barcelona")) {
+                                  isTaxiSelected = false;
+
+                                }
+                                if(v == "Curso de Taxi Barcelona"){
+                                  isTaxiSelected = true;
+                                  setState(() {
+
+                                  });
+                                }
+                                else{
+                                  if(!courses.contains(v)){
+                                    courses.add(v);
+                                    setState(() {
+
+                                    });
+                                  }
+                                }
+
                               },
                               items: licenseTypes.map<DropdownMenuItem<String>>((String v){
                                 return DropdownMenuItem<String>(
@@ -279,6 +345,39 @@ class _editStudentScreenState extends State<editStudentScreen> {
                             ),
 
                           ],
+                        ),
+                        Visibility(
+                          visible: isTaxiSelected,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Taxi Subtype ",style: TextStyle(fontFamily: "Poppins",color: Colors.blue),),
+
+                              DropdownButton(
+                                value: taxiType,
+                                icon: Icon(Icons.arrow_drop_down),
+                                iconSize: 30,
+                                onChanged: (String? v){
+                                  taxiType = v!;
+                                  if(!courses.contains(v)){
+                                    courses.add(v);
+                                    setState(() {
+
+                                    });
+                                  }
+                                },
+                                items: taxiSubtypes.map<DropdownMenuItem<String>>((String v){
+                                  return DropdownMenuItem<String>(
+                                    value: v,
+                                    child: Text(v),
+
+                                  );
+                                }).toList(),
+                              ),
+
+                            ],
+                          ),
                         ),
 
                         SizedBox(
@@ -303,20 +402,7 @@ class _editStudentScreenState extends State<editStudentScreen> {
                           height: 24,
                         ),
 
-                        TextField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            labelText: "Email",
-                          ),
-                        ),
 
-                        const SizedBox(
-                          height: 24,
-                        ),
 
                         TextField(
                           controller: _passwordController,
@@ -407,7 +493,9 @@ class _editStudentScreenState extends State<editStudentScreen> {
                               "name": _nameController.text,
                               "email": _emailController.text,
                               "password": _passwordController.text,
-                              'profileImage':_imageUrl});
+                              'profileImage':_imageUrl,
+                              "courses":courses
+                            });
 
                             DateFormat dateformat = DateFormat("yyyy-MM-dd");
                             studentModel newStudent = studentModel(
@@ -425,7 +513,7 @@ class _editStudentScreenState extends State<editStudentScreen> {
                                 translation: widget.student.translation,
                                 token: widget.student.token,
                                 mode: widget.student.mode,
-                                licenseType: licenseTypes[0], revise: widget.student.revise  );
+                                licenseType: licenseTypes[0], revise: widget.student.revise, courses: courses, noOfActivation: widget.student.noOfActivation, noOfActivations: noOfActivationsList);
 
                             FirebaseFirestore.instance.collection("admin").doc(
                                 "data").collection("students").doc(

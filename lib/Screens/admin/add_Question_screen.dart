@@ -10,7 +10,8 @@ import '../../Models/question.dart';
 
 
 class addQuestio extends StatefulWidget {
-  const addQuestio({Key? key}) : super(key: key);
+  bool is4Option;
+   addQuestio({Key? key,required this.is4Option}) : super(key: key);
 
   @override
   State<addQuestio> createState() => _addQuestioState();
@@ -204,42 +205,42 @@ class _addQuestioState extends State<addQuestio> {
                 height: 24,
               ),
 
-              // Container(
-              //   width: MediaQuery.of(context).size.width * 0.9,
-              //   decoration: BoxDecoration(
-              //       borderRadius: BorderRadius.circular(10),
-              //       color: Colors.green[100]),
-              //   child: ListTile(
-              //     dense: true,
-              //     contentPadding:
-              //     const EdgeInsets.only(left: 15, right: 10),
-              //     horizontalTitleGap: 0,
-              //     visualDensity: const VisualDensity(
-              //         horizontal: 0, vertical: -4),
-              //     title:  TextField(
-              //       controller: _opt4Controller,
-              //       decoration: InputDecoration(
-              //         labelText: "Option D",
-              //       ),
-              //     ),
-              //     trailing: answer == 4?
-              //     CircleAvatar(
-              //       foregroundImage: AssetImage("assets/tick.jpg"),
-              //       radius: 15,
-              //     )
-              //         :InkWell(
-              //       onTap: (){
-              //         setState(() {
-              //           answer  = 4;
-              //         });
-              //       },
-              //           child: CircleAvatar(
-              //       foregroundImage: AssetImage("assets/cross.jpg"),
-              //       radius: 15,
-              //     ),
-              //         ),
-              //   ),
-              // ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.9,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.green[100]),
+                child: ListTile(
+                  dense: true,
+                  contentPadding:
+                  const EdgeInsets.only(left: 15, right: 10),
+                  horizontalTitleGap: 0,
+                  visualDensity: const VisualDensity(
+                      horizontal: 0, vertical: -4),
+                  title:  TextField(
+                    controller: _opt4Controller,
+                    decoration: InputDecoration(
+                      labelText: "Option D",
+                    ),
+                  ),
+                  trailing: answer == 4?
+                  CircleAvatar(
+                    foregroundImage: AssetImage("assets/tick.jpg"),
+                    radius: 15,
+                  )
+                      :InkWell(
+                    onTap: (){
+                      setState(() {
+                        answer  = 4;
+                      });
+                    },
+                        child: CircleAvatar(
+                    foregroundImage: AssetImage("assets/cross.jpg"),
+                    radius: 15,
+                  ),
+                      ),
+                ),
+              ),
               const SizedBox(
                 height: 12,
               ),
@@ -273,7 +274,7 @@ class _addQuestioState extends State<addQuestio> {
     optionA: _opt1Controller.text,
     option2: _opt2Controller.text,
     optionC:_opt3Controller.text,
-    answer: a[answer-1], image: _imageUrl
+    answer: a[answer-1], image: _imageUrl, optionD: _opt4Controller.text
     );
 
     FirebaseFirestore.instance.collection("questions").doc(q.statement).
@@ -329,7 +330,7 @@ class _addQuestioState extends State<addQuestio> {
 
   void selectImage() async {
     final XFile? selectedImages = (await imagePicker.pickImage(
-        imageQuality: 10, source: ImageSource.gallery));
+        imageQuality: 80, source: ImageSource.gallery));
     // imageFileList.add(selectedImages!);
     imageFile = selectedImages!;
 
@@ -373,6 +374,7 @@ class _addQuestioState extends State<addQuestio> {
     downloadURL = await (await uploadTask).ref.getDownloadURL();
     _imageUrl = downloadURL;
   }
+
   //
   // Future uploadToStorage() async {
   //   try {

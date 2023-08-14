@@ -88,6 +88,12 @@ class _homeScreenState extends State<homeScreen> {
                                          builder: (context) =>
                                              loginScreen()));
                                    }
+                                   else if(name == "admin") {
+                                     Navigator.pushReplacement(
+                                         context, MaterialPageRoute(
+                                         builder: (context) =>
+                                             adminScreen()));
+                                   }
                                    else {
                                      Navigator.pushReplacement(
                                          context, MaterialPageRoute(
@@ -115,7 +121,8 @@ class _homeScreenState extends State<homeScreen> {
                                         )),
                                   ),
                                 );
-                              } else if (snapshot.hasError) {
+                              }
+                              else if (snapshot.hasError) {
                                 return Container(
                                     width: 80,
                                     child: Material(
@@ -138,12 +145,27 @@ class _homeScreenState extends State<homeScreen> {
                               }
                             }
                             // means connection to future hasnt been made yet
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+                            if (snapshot.connectionState == ConnectionState.waiting)
+                            {
                               return  Center(
                                 child: InkWell(
-                                  onTap: (){
+                                    onTap: (){
+                                      if(name =="Login") {
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(
+                                            builder: (context) => loginScreen()));
+                                      }
+                                      else if(name == "admin"){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(
+                                            builder: (context) => adminScreen()));
+                                      }
+                                      else{
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(
+                                            builder: (context) => mainMenu(isfromLogin: false, checkUpdate: false)));                                }
+                                    },
 
-                                  },
                                   child: Container(
                                       width: 80,
                                       child: Material(
@@ -166,12 +188,22 @@ class _homeScreenState extends State<homeScreen> {
                                 ),
                               );
                             }
-
                             return InkWell(
                               onTap: (){
-                                Navigator.pushReplacement(
-                                    context, MaterialPageRoute(builder: (context) => loginScreen()));
-
+                                if(name =="Login") {
+                                  Navigator.pushReplacement(
+                                      context, MaterialPageRoute(
+                                      builder: (context) => loginScreen()));
+                                }
+                                else if(name == "admin"){
+                                  Navigator.pushReplacement(
+                                      context, MaterialPageRoute(
+                                      builder: (context) => adminScreen()));
+                                }
+                                else{
+                                  Navigator.pushReplacement(
+                                      context, MaterialPageRoute(
+                                      builder: (context) => mainMenu(isfromLogin: false, checkUpdate: true)));                                }
                               },
                               child: Container(
                                   width: MediaQuery.of(context).size.width * 0.2,
@@ -187,7 +219,7 @@ class _homeScreenState extends State<homeScreen> {
                                           padding: const EdgeInsets.fromLTRB(10, 4, 10, 4),
                                           child:FittedBox(
                                             child: Text(
-                                              " Login ",
+                                             name =="login"? " login ":name,
                                               style: const TextStyle(
                                                   fontFamily: "PoppinRegular",color: Colors.white),
                                             ),

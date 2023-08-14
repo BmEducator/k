@@ -5,6 +5,8 @@ import 'package:bmeducators/Screens/admin/questionPank_categories.dart';
 import 'package:bmeducators/Screens/admin/quizesAll_Scree.dart';
 import 'package:bmeducators/Screens/admin/usersScreen.dart';
 import 'package:bmeducators/Screens/admin/videoScreenAdmin.dart';
+import 'package:bmeducators/Screens/homeScreen.dart';
+import 'package:bmeducators/mainScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -34,79 +36,87 @@ class _adminScreenState extends State<adminScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SingleChildScrollView(
-          child: Stack(
-            children:
-            [
+    return WillPopScope(
+        onWillPop: () async {
+          Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MainScreen()));
+          return true;
+        },
+      child: Scaffold(
+          body: SingleChildScrollView(
+            child: Stack(
+              children:
+              [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                  children: [
 
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                children: [
 
-
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.05,
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    width: MediaQuery.of(context).size.width *0.8,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: const Text(
-                        "Admin Panel",
-                        style: TextStyle(fontFamily: "Poppins",fontSize: 24),
+                    SizedBox(
+                      height: 40
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width *0.8,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: const Text(
+                          "Admin Panel",
+                          style: TextStyle(fontFamily: "Poppins",fontSize: 24),
+                        ),
                       ),
                     ),
-                  ),
 
-                  Divider(thickness: 4,),
+                    Divider(thickness: 4,),
 
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.05,
-                  ),
-
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: GridView.count(
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 20),
-                      scrollDirection: Axis.vertical,
-                      crossAxisCount: 2,
-                      childAspectRatio: (1/ 0.9),
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 5,
-                      children: List.generate(
-                        itemList.length,
-                            (int i) {
-                          return AnimationConfiguration.staggeredGrid(
-                              position: i,
-                              duration: const Duration(
-                                  milliseconds: 375),
-                              columnCount: 2,
-                              child: ScaleAnimation(
-                                child: FadeInAnimation(
-                                    child:Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                    child: serviceContainer(itemList[i][0], itemList[i][1]),
-                                    )
-
-                                ),
-                              ));
-                        },
-                      ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
                     ),
-                  )
-                  ]),
-              ),
-              NavigationDrawer()
 
-            ]
-          ),
-        )
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      child: GridView.count(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 20),
+                        scrollDirection: Axis.vertical,
+                        crossAxisCount: 2,
+                        childAspectRatio: (1/ 0.9),
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 5,
+                        children: List.generate(
+                          itemList.length,
+                              (int i) {
+                            return AnimationConfiguration.staggeredGrid(
+                                position: i,
+                                duration: const Duration(
+                                    milliseconds: 375),
+                                columnCount: 2,
+                                child: ScaleAnimation(
+                                  child: FadeInAnimation(
+                                      child:Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                      child: serviceContainer(itemList[i][0], itemList[i][1]),
+                                      )
 
+                                  ),
+                                ));
+                          },
+                        ),
+                      ),
+                    )
+                    ]),
+                ),
+                NavigationDrawer()
+
+              ]
+            ),
+          )
+
+      ),
     );
   }
 
@@ -128,7 +138,7 @@ class _adminScreenState extends State<adminScreen> {
               Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) =>
-                          questionPankCategories()));
+                          questionPankCategories(type: 'quiz',)));
             }
             else if(name == "Classes"){
               Navigator.of(context).push(
@@ -147,7 +157,8 @@ class _adminScreenState extends State<adminScreen> {
               Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) =>
-                          adminVideoScreen()));
+                          questionPankCategories(type: 'video',)));
+
             }
             else if(name == "Quizes"){
               Navigator.of(context).push(
